@@ -1,3 +1,4 @@
+import os
 from urllib.parse import urlencode
 
 from django.core.paginator import Paginator
@@ -223,6 +224,8 @@ def home(request):
         "events_side": events_sidebar(),
         "streams": LiveStream.objects.all()[:48],
         "twitch_parent": request.get_host().split(":")[0],
+        # без ключей Twitch API показываем встроенные плееры известных каналов (список меняется в .env)
+        "fallback_channels": [c.strip() for c in os.environ.get("TWITCH_FALLBACK_CHANNELS", "esl_csgo,blastpremier").split(",") if c.strip()],
         "news": NewsArticle.objects.all()[:9],
         "videos": Video.objects.all()[:4],
         "standings": standings,

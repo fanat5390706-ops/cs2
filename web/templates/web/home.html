@@ -93,7 +93,20 @@
       </div>
     </div>
     {% else %}
+    {% if fallback_channels %}
+    <div class="streams-box">
+      <div class="now-playing">
+        <iframe src="https://player.twitch.tv/?channel={{ fallback_channels.0 }}&parent={{ twitch_parent }}&muted=true&autoplay=false" allowfullscreen loading="lazy"></iframe>
+        <div class="np-name"><b>{{ fallback_channels.0 }}</b><span class="muted">official channel</span></div>
+      </div>
+      <div class="stream-grid">
+        {% for c in fallback_channels %}<a class="stream-chip" href="https://www.twitch.tv/{{ c }}" target="_blank" rel="noopener"><span>{{ c|truncatechars:18 }}</span></a>{% endfor %}
+      </div>
+      <div class="muted small p-2">Official channels. A live list with viewer counts appears after adding Twitch keys (sync_twitch).</div>
+    </div>
+    {% else %}
     <div class="side-box"><div class="empty">No live streams. Add TWITCH_CLIENT_ID and TWITCH_CLIENT_SECRET to .env and run <code>python manage.py sync_twitch</code>.</div></div>
+    {% endif %}
     {% endif %}
   </section>
 
