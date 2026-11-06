@@ -1,0 +1,63 @@
+{% extends "web/base.html" %}
+{% load web_extras %}
+{% block title %}Players{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-end flex-wrap gap-2 mb-2">
+  <h1 class="h2 mb-0">Players</h1>
+  <form class="filters d-flex gap-2" method="get">
+    <input type="hidden" name="role" value="{{ role }}">
+    <input class="form-control form-control-sm" type="search" name="q" value="{{ q }}" placeholder="Search player">
+    <select class="form-select form-select-sm" name="team" onchange="this.form.submit()">
+      <option value="">All teams</option>
+      {% for t in teams %}<option value="{{ t.tag }}" {% if t.tag == team_tag %}selected{% endif %}>{{ t.name }}</option>{% endfor %}
+    </select>
+    <select class="form-select form-select-sm" name="sort" onchange="this.form.submit()">
+      <option value="elo" {% if sort == "elo" %}selected{% endif %}>Sort: FACEIT ELO</option>
+      <option value="kd" {% if sort == "kd" %}selected{% endif %}>Sort: K/D</option>
+      <option value="hs" {% if sort == "hs" %}selected{% endif %}>Sort: HS%</option>
+      <option value="winrate" {% if sort == "winrate" %}selected{% endif %}>Sort: Win rate</option>
+      <option value="adr" {% if sort == "adr" %}selected{% endif %}>Sort: ADR</option>
+      <option value="rating" {% if sort == "rating" %}selected{% endif %}>Sort: Rating</option>
+      <option value="maps" {% if sort == "maps" %}selected{% endif %}>Sort: Maps</option>
+    </select>
+  </form>
+</div>
+
+<div class="tabs">
+  <a class="{% if not role %}active{% endif %}" href="?q={{ q }}&team={{ team_tag }}&sort={{ sort }}">All</a>
+  {% for r in roles %}<a class="{% if role == r %}active{% endif %}" href="?role={{ r|urlencode }}&q={{ q }}&team={{ team_tag }}&sort={{ sort }}">{{ r|capfirst }}</a>{% endfor %}
+</div>
+
+<div class="panel">
+  <div class="table-responsive">
+    <table class="tbl">
+      <thead>
+        <tr><th>#</th><th>Player</th><th>Team</th><th class="num">FACEIT ELO</th><th class="num">K/D</th><th class="num">HS%</th><th class="num">Win %</th><th class="num">ADR</th><th class="num">Maps</th></tr>
+      </thead>
+      <tbody>
+        {% for p in players %}
+        <tr>
+          <td class="rank">{{ first_rank|add:forloop.counter }}</td>
+          <td>
+            {% if p.avatar_url or p.photo_url %}<img class="avatar-sm" src="{% firstof p.avatar_url p.photo_url %}" alt="" loading="lazy">{% else %}<span class="avatar-sm ph" style="{{ p.nickname|badge_style }}">{{ p.nickname|slice:":2"|upper }}</span>{% endif %}{% if p.country %}<img class="flag" src="{{ p.country|flag_url }}" alt="{{ p.country }}">{% endif %}<a href="{% url 'web:player_detail' p.player_id %}">{{ p.nickname }}</a>
+            {% if p.role %}<span class="muted small ms-1">{{ p.role }}</span>{% endif %}
+          </td>
+          <td class="muted">{{ p.team_tag|default:"—" }}</td>
+          <td class="num fw-bold">{{ p.faceit_elo|default_if_none:"—" }}</td>
+          <td class="num {{ p.kd|kd_class }}">{{ p.kd|default_if_none:"—" }}</td>
+          <td class="num">{{ p.hs_percent|default_if_none:"—" }}</td>
+          <td class="num">{{ p.faceit_win_rate|default_if_none:"—" }}</td>
+          <td class="num {{ p.adr|hi_class:80 }}">{{ p.adr|default_if_none:"—" }}</td>
+          <td class="num">{{ p.maps_played|default_if_none:"—" }}</td>
+        </tr>
+        {% empty %}
+        <tr><td colspan="9" class="empty">No players found.</td></tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+<p class="muted small mt-2">K/D, HS%, Win % and Maps without match records come from FACEIT lifetime stats. ADR needs per-round data, which free APIs do not provide.</p>
+{% include "web/_pager.html" %}
+{% endblock %}

@@ -1,0 +1,112 @@
+{% extends "web/base.html" %}
+{% load web_extras %}
+{% block title %}{{ player.nickname }}{% endblock %}
+
+{% block content %}
+<div class="hl-grid two">
+  <aside class="hl-left">
+    <div class="side-title">Ranking</div>
+    <div class="side-box">
+      {% if team_now %}<a class="rank-row" href="{% url 'web:team_detail' team_now.pk %}">{% include "web/_logo.html" with logo=team_now.logo_url tag=team_now.tag %}<span>{{ team_now.name }}</span></a>{% endif %}
+      <a class="side-btn" href="{% url 'web:stats' %}?section=players">Player stats</a>
+    </div>
+    {% if team_record %}
+    <div class="side-title">{{ team_now.name }} form</div>
+    <div class="side-box info-list">
+      <div><span>Wins–Losses</span><span>{{ team_record.wins }}–{{ team_record.losses }}</span></div>
+      <div><span>Win rate</span><span>{% if team_record.win_rate is not None %}{{ team_record.win_rate }}%{% else %}—{% endif %}</span></div>
+      <div><span>Last 5</span><span>{% for x in team_record.form %}<span class="form form-{{ x }}">{{ x }}</span>{% empty %}—{% endfor %}</span></div>
+    </div>
+    {% endif %}
+  </aside>
+
+  <section class="hl-center">
+    <div class="pl-card">
+      <div class="pl-photo">
+        {% if player.photo_url or player.avatar_url %}<img src="{% firstof player.photo_url player.avatar_url %}" alt="{{ player.nickname }}">
+        {% else %}<div class="avatar-ph" style="{{ player.nickname|badge_style }}">{{ player.nickname|slice:":2"|upper }}</div>{% endif %}
+        <div class="pl-flags">{% if player.country %}<img class="flag" src="{{ player.country|flag_url }}" alt="{{ player.country }}">{% endif %}{% if team_now %}{% include "web/_logo.html" with logo=team_now.logo_url tag=team_now.tag %}{% endif %}</div>
+      </div>
+      <div class="pl-info">
+        <h1>{{ player.nickname }}</h1>
+        <div class="muted">{{ player.first_name }} {{ player.last_name }}</div>
+        <div class="info-list">
+          {% if player.birth_date %}<div><span>Age</span><span>{{ player.birth_date|age }} years</span></div>{% endif %}
+          <div><span>Current team</span><span>{% if team_now %}<a href="{% url 'web:team_detail' team_now.pk %}">{{ team_now.name }}</a>{% else %}Free agent{% endif %}</span></div>
+          {% if player.role %}<div><span>Role</span><span>{{ player.role|capfirst }}</span></div>{% endif %}
+          {% if player.faceit_elo %}<div><span>FACEIT</span><span>{{ player.faceit_elo }} ELO · level {{ player.faceit_level }}</span></div>{% endif %}
+          {% if player.vac_banned %}<div><span>VAC</span><span class="neg">banned</span></div>{% endif %}
+        </div>
+        <div class="pl-links">
+          {% if player.steam_profile_url %}<a href="{{ player.steam_profile_url }}" target="_blank" rel="noopener">Steam</a>{% endif %}
+          {% if player.liquipedia_page %}<a href="https://liquipedia.net/counterstrike/{{ player.liquipedia_page|urlencode }}" target="_blank" rel="noopener">Liquipedia</a>{% endif %}
+        </div>
+      </div>
+    </div>
+
+    <div class="tabs">
+      {% for key, label in tabs %}<a class="{% if tab == key %}active{% endif %}" href="?tab={{ key }}">{{ label }}</a>{% endfor %}
+    </div>
+
+    {% if tab == "info" %}
+    <div class="row g-3">
+      <div class="col-lg-6">
+        <div class="sec-title mt-0">{{ player.nickname }} statistics <small class="muted fw-normal">({{ bars_source }})</small></div>
+        <div class="side-box p-2">
+          {% for label, raw, text, width in bars %}
+          <div class="sbar"><div class="sb-head"><span>{{ label }}</span><b>{{ text }}</b></div><div class="sb-track"><div style="width:{{ width }}%"></div></div></div>
+          {% empty %}<div class="empty">No statistics yet. Run link_steam_via_faceit and sync_faceit.</div>{% endfor %}
+        </div>
+        {% if not totals %}<p class="muted small mt-1">Tournament statistics (Rating, ADR) are not available from the free data source; these are FACEIT matchmaking values.</p>{% endif %}
+      </div>
+      <div class="col-lg-6">
+        <div class="sec-title mt-0">Upcoming &amp; recent matches</div>
+        <div class="side-box">
+          {% for m in upcoming_team %}
+          <a class="pm-row" href="{% url 'web:match_detail' m.match_id %}"><span class="muted">vs</span>{% include "web/_logo.html" with logo=m.logo2 tag=m.tag2 %}<span class="pm-name">{{ m.team1 }} – {{ m.team2 }}<small>{{ m.event }}</small></span><span class="muted">{{ m.scheduled_at|date:"d.m H:i" }}</span></a>
+          {% endfor %}
+          {% for m in team_matches|slice:":6" %}
+          <a class="pm-row res" href="{% url 'web:match_detail' m.match_id %}"><span class="muted">vs</span>{% include "web/_logo.html" with logo=m.logo2 tag=m.tag2 %}<span class="pm-name">{{ m.team1 }} – {{ m.team2 }}<small>{{ m.event }}</small></span><b>{{ m.maps_team1 }}:{{ m.maps_team2 }}</b></a>
+          {% empty %}{% if not upcoming_team %}<div class="empty">No matches yet.</div>{% endif %}{% endfor %}
+        </div>
+      </div>
+    </div>
+
+    {% elif tab == "teams" %}
+    <div class="side-box">
+      <table class="tbl"><tbody>
+        {% for m in memberships %}<tr><td>{% include "web/_logo.html" with logo=m.team.logo_url tag=m.team.tag %} <a href="{% url 'web:team_detail' m.team.pk %}">{{ m.team.name }}</a> <span class="muted small">{{ m.role|capfirst }}</span></td>
+          <td class="num muted">{{ m.joined_on|date:"d.m.Y" }} — {% if m.left_on %}{{ m.left_on|date:"d.m.Y" }}{% else %}present{% endif %}</td></tr>
+        {% empty %}<tr><td class="empty">No data.</td></tr>{% endfor %}
+      </tbody></table>
+    </div>
+
+    {% elif tab == "matches" %}
+    <div class="sec-title mt-0">Matches of {{ team_now.name|default:"the team" }}</div>
+    {% include "web/_results_table.html" with matches=all_rows %}
+    {% if stats %}
+    <div class="sec-title">Match records</div>
+    <div class="side-box"><table class="tbl">
+      <thead><tr><th>Match</th><th>Map</th><th>Team</th><th class="num">K</th><th class="num">D</th><th class="num">K/D</th><th class="num">ADR</th></tr></thead>
+      <tbody>{% for s in stats %}<tr><td><a href="{% url 'web:match_detail' s.match_map.match.pk %}">{{ s.match_map.match.scheduled_at|date:"d.m.Y" }}</a></td><td>{{ s.match_map.game_map.name }}</td><td>{{ s.participant.entry.team.tag }}</td><td class="num">{{ s.kills }}</td><td class="num">{{ s.deaths }}</td><td class="num {{ s.kd|kd_class }}">{{ s.kd|default_if_none:"—" }}</td><td class="num">{{ s.adr|default_if_none:"—" }}</td></tr>{% endfor %}</tbody>
+    </table></div>
+    {% endif %}
+
+    {% else %}
+    <div class="stat-grid" style="grid-template-columns: repeat(6, 1fr)">
+      <div class="stat-card accent"><div class="value">{{ player.faceit_elo|default_if_none:"—" }}</div><div class="label">ELO</div></div>
+      <div class="stat-card"><div class="value">{{ player.faceit_level|default_if_none:"—" }}</div><div class="label">Level</div></div>
+      <div class="stat-card"><div class="value {{ player.faceit_kd|kd_class }}">{{ player.faceit_kd|default_if_none:"—" }}</div><div class="label">K/D</div></div>
+      <div class="stat-card"><div class="value">{{ player.faceit_hs|default_if_none:"—" }}</div><div class="label">HS%</div></div>
+      <div class="stat-card"><div class="value">{{ player.faceit_win_rate|default_if_none:"—" }}</div><div class="label">Win %</div></div>
+      <div class="stat-card"><div class="value">{{ player.faceit_matches|default_if_none:"—" }}</div><div class="label">Matches</div></div>
+    </div>
+    <div class="side-box"><table class="tbl">
+      <thead><tr><th>Map</th><th class="num">Matches</th><th class="num">Win %</th><th class="num">K/D</th><th class="num">HS%</th></tr></thead>
+      <tbody>{% for m in player.faceit_maps %}<tr><td class="fw-bold">{{ m.map }}</td><td class="num">{{ m.matches }}</td><td class="num">{{ m.win_rate|default_if_none:"—" }}</td><td class="num {{ m.kd|kd_class }}">{{ m.kd|default_if_none:"—" }}</td><td class="num">{{ m.hs|default_if_none:"—" }}</td></tr>
+      {% empty %}<tr><td colspan="5" class="empty">No per-map data.</td></tr>{% endfor %}</tbody>
+    </table></div>
+    {% endif %}
+  </section>
+</div>
+{% endblock %}

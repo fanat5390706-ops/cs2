@@ -1,0 +1,23 @@
+{% extends "web/base.html" %}
+{% block title %}Видео{% endblock %}
+
+{% block content %}
+<h1 class="h3 mb-2">Видео</h1>
+<div class="d-flex flex-wrap gap-2 mb-2">
+  <a class="pill {% if not kind %}active{% endif %}" href="{% url 'web:video_list' %}">Все</a>
+  {% for value, label in kinds %}<a class="pill {% if kind == value %}active{% endif %}" href="?kind={{ value }}">{{ label }}</a>{% endfor %}
+</div>
+<div class="row g-2">
+  {% for v in videos %}
+  <div class="col-6 col-md-4 col-lg-3">
+    <a class="vcard" href="https://www.youtube.com/watch?v={{ v.youtube_id }}" target="_blank" rel="noopener">
+      <img src="{{ v.thumbnail_url }}" alt="">
+      <span class="vtitle">{{ v.title }}</span>
+      <span class="muted small">{{ v.channel }}{% if v.tournament %} · {{ v.tournament.name }}{% endif %}</span>
+    </a>
+  </div>
+  {% empty %}
+  <div class="empty">Видео пока нет. Загрузите их командой <code>python manage.py sync_youtube</code>.</div>
+  {% endfor %}
+</div>
+{% endblock %}

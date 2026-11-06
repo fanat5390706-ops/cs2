@@ -1,0 +1,24 @@
+{% load web_extras %}
+<div>
+  {% for m in matches %}
+  <a class="match-row" href="{% url 'web:match_detail' m.match_id %}">
+    <div class="mr-time">
+      <div>{{ m.scheduled_at|date:"H:i" }}</div>
+      <div>{{ m.scheduled_at|date:"d.m" }}</div>
+    </div>
+    <div class="mr-team right {% if m.winner_entry_id and m.winner_entry_id == m.entry1_id %}win{% elif m.winner_entry_id %}lose{% endif %}">
+      <span>{{ m.team1 }}</span>{% include "web/_logo.html" with logo=m.logo1 tag=m.tag1 %}
+    </div>
+    <div class="mr-score">
+      {% if m.status == 'scheduled' %}<span class="muted">vs</span>{% else %}{{ m.maps_team1 }}:{{ m.maps_team2 }}{% endif %}
+      {% if m.status == 'live' %}<div class="live">LIVE</div>{% endif %}
+    </div>
+    <div class="mr-team {% if m.winner_entry_id and m.winner_entry_id == m.entry2_id %}win{% elif m.winner_entry_id %}lose{% endif %}">
+      {% include "web/_logo.html" with logo=m.logo2 tag=m.tag2 %}<span>{{ m.team2 }}</span>
+    </div>
+    <div class="mr-event">{{ m.stage }} · BO{{ m.best_of }}</div>
+  </a>
+  {% empty %}
+  <div class="empty">Матчей пока нет.</div>
+  {% endfor %}
+</div>

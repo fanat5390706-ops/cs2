@@ -1,0 +1,23 @@
+{% load web_extras %}
+<table class="tbl mtable">
+  <tbody>
+    {% for m in matches %}
+    <tr>
+      <td class="rank">{{ forloop.counter }}</td>
+      <td class="mt-time">{% if m.status == "scheduled" %}{{ m.scheduled_at|date:"H:i" }}{% else %}<span class="live">LIVE</span>{% endif %}</td>
+      <td class="mt-team">
+        <a href="{% url 'web:match_detail' m.match_id %}">{% include "web/_logo.html" with logo=m.logo1 tag=m.tag1 %}<span>{{ m.team1 }}</span></a>
+      </td>
+      <td class="mt-score">{% if m.status == "scheduled" %}<span class="muted">vs</span>{% else %}<b>{{ m.maps_team1 }}</b> · <b>{{ m.maps_team2 }}</b>{% endif %}</td>
+      <td class="mt-team">
+        <a href="{% url 'web:match_detail' m.match_id %}">{% include "web/_logo.html" with logo=m.logo2 tag=m.tag2 %}<span>{{ m.team2 }}</span></a>
+      </td>
+      <td class="muted">{{ m.stage }}</td>
+      <td class="mt-event"><a href="{% url 'web:tournament_detail' m.tournament_id %}">{{ m.event }}</a></td>
+      <td class="text-end"><a class="chip {% if m.status == 'live' %}chip-live{% endif %}" href="{% url 'web:match_detail' m.match_id %}">{% if m.status == "live" %}Live{% else %}Preview{% endif %}</a></td>
+    </tr>
+    {% empty %}
+    <tr><td class="empty">No matches.</td></tr>
+    {% endfor %}
+  </tbody>
+</table>

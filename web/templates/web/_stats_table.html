@@ -1,0 +1,33 @@
+{% load web_extras %}
+<div class="table-responsive">
+  <table class="tbl">
+    <thead>
+      <tr>
+        <th>Игрок</th>
+        <th class="num">K</th><th class="num">D</th><th class="num">A</th>
+        <th class="num">HS</th><th class="num">Урон</th><th class="num">Раунды</th>
+        <th class="num">K/D</th><th class="num">HS%</th><th class="num">ADR</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for s in stats %}
+      <tr>
+        <td>
+          {% if s.player.country %}<img class="flag" src="{{ s.player.country|flag_url }}" alt="{{ s.player.country }}">{% endif %}<a href="{% url 'web:player_detail' s.player.pk %}">{{ s.player.nickname }}</a>
+        </td>
+        <td class="num">{{ s.kills }}</td>
+        <td class="num">{{ s.deaths }}</td>
+        <td class="num">{{ s.assists }}</td>
+        <td class="num">{{ s.headshot_kills }}</td>
+        <td class="num">{{ s.damage }}</td>
+        <td class="num">{{ s.rounds_played }}</td>
+        <td class="num {{ s.kd|kd_class }}">{{ s.kd|default_if_none:"—" }}</td>
+        <td class="num">{{ s.hs_pct|default_if_none:"—" }}</td>
+        <td class="num">{{ s.adr|default_if_none:"—" }}</td>
+      </tr>
+      {% empty %}
+      <tr><td colspan="10" class="empty">Статистика не внесена.</td></tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>

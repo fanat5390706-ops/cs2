@@ -1,0 +1,13 @@
+{% load web_extras %}
+<table class="tbl"><tbody>
+  {% for m in rows %}
+  {% with first=m.entry1_id %}
+  <tr>
+    <td class="muted small">{{ m.scheduled_at|date:"d.m" }}</td>
+    <td><a href="{% url 'web:match_detail' m.match_id %}">{% include "web/_logo.html" with logo=m.logo1 tag=m.tag1 %} {{ m.team1 }}</a></td>
+    <td class="num"><b class="{% if m.winner_entry_id == m.entry1_id %}pos{% endif %}">{{ m.maps_team1 }}</b> - <b class="{% if m.winner_entry_id == m.entry2_id %}pos{% endif %}">{{ m.maps_team2 }}</b></td>
+    <td class="text-end"><a href="{% url 'web:match_detail' m.match_id %}">{% include "web/_logo.html" with logo=m.logo2 tag=m.tag2 %} {{ m.team2 }}</a></td>
+  </tr>
+  {% endwith %}
+  {% empty %}<tr><td class="empty">No results yet.</td></tr>{% endfor %}
+</tbody></table>

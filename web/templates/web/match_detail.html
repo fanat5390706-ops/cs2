@@ -1,0 +1,121 @@
+{% extends "web/base.html" %}
+{% load web_extras %}
+{% block title %}{{ series.team1 }} vs {{ series.team2 }}{% endblock %}
+
+{% block head %}{% if match.status == "live" %}<meta http-equiv="refresh" content="60">{% endif %}{% endblock %}
+
+{% block content %}
+<div class="hl-grid two">
+  <aside class="hl-left">
+    <div class="side-box">
+      <a class="ev-row" href="{% url 'web:tournament_detail' match.tournament.pk %}">
+        {% if match.tournament.image_url %}<img class="tlogo" src="{{ match.tournament.image_url }}" alt="">{% endif %}
+        <span class="ev-name">{{ match.tournament.name|truncatechars:30 }}</span>
+      </a>
+      <div class="info-list">
+        <div><span>Teams</span><span>{{ teams_count }}</span></div>
+        {% if match.tournament.prize_pool_usd %}<div><span>Prize pool</span><span>${{ match.tournament.prize_pool_usd|intcomma_space }}</span></div>{% endif %}
+        {% if match.tournament.location %}<div><span>Location</span><span>{{ match.tournament.location }}</span></div>{% endif %}
+      </div>
+    </div>
+    <div class="side-title">Other matches today</div>
+    <div class="side-box">{% include "web/_today_list.html" with matches=other_upcoming %}</div>
+  </aside>
+
+  <section class="hl-center">
+    <div class="mh">
+      <a class="mh-team" href="{% if series.team1_id %}{% url 'web:team_detail' series.team1_id %}{% else %}{% url 'web:team_list' %}?q={{ series.tag1 }}{% endif %}">
+        {% include "web/_logo.html" with logo=series.logo1 tag=series.tag1 size="lg" %}
+        <span class="{% if series.winner_entry_id and series.winner_entry_id == series.entry1_id %}pos{% endif %}">{{ series.team1 }}</span>
+        {% if match.status != "scheduled" %}<b class="mh-s {% if series.winner_entry_id == series.entry1_id %}pos{% elif series.winner_entry_id %}neg{% endif %}">{{ series.maps_team1 }}</b>{% endif %}
+      </a>
+      <div class="mh-mid">
+        <div class="mh-time">{{ match.scheduled_at|date:"H:i" }}</div>
+        <div class="muted small">{{ match.scheduled_at|date:"jS \o\f F Y" }}</div>
+        <a href="{% url 'web:tournament_detail' match.tournament.pk %}">{{ match.tournament.name|truncatechars:34 }}</a>
+        <div class="mh-status {% if match.status == 'live' %}neg{% endif %}">{% if match.status == "finished" %}Match over{% elif match.status == "live" %}LIVE{% else %}{{ match.status|status_label }}{% endif %}</div>
+      </div>
+      <a class="mh-team" href="{% if series.team2_id %}{% url 'web:team_detail' series.team2_id %}{% else %}{% url 'web:team_list' %}?q={{ series.tag2 }}{% endif %}">
+        {% include "web/_logo.html" with logo=series.logo2 tag=series.tag2 size="lg" %}
+        <span class="{% if series.winner_entry_id and series.winner_entry_id == series.entry2_id %}pos{% endif %}">{{ series.team2 }}</span>
+        {% if match.status != "scheduled" %}<b class="mh-s {% if series.winner_entry_id == series.entry2_id %}pos{% elif series.winner_entry_id %}neg{% endif %}">{{ series.maps_team2 }}</b>{% endif %}
+      </a>
+    </div>
+
+    <div class="row g-3">
+      <div class="col-lg-7">
+        <div class="sec-title mt-2">Maps</div>
+        {% for item in maps %}
+        <div class="map-row"><span class="map-name">{{ item.map.game_map.name }}</span>
+          <span class="{% if item.r1 > item.r2 %}pos{% else %}neg{% endif %}">{{ item.r1 }}</span><span class="muted">:</span><span class="{% if item.r2 > item.r1 %}pos{% else %}neg{% endif %}">{{ item.r2 }}</span></div>
+        {% empty %}
+        <div class="side-box"><div class="empty">Map scores and picks are not available from the free data source{% if match.status == "finished" %}; series result is {{ series.maps_team1 }}–{{ series.maps_team2 }}{% endif %}.</div></div>
+        {% endfor %}
+      </div>
+      <div class="col-lg-5">
+        <div class="sec-title mt-2">Information</div>
+        <div class="side-box info-list">
+          <div><span>Format</span><span>Best of {{ match.best_of }}</span></div>
+          <div><span>Stage</span><span>{{ match.stage }}</span></div>
+          <div><span>Status</span><span>{{ match.status|status_label }}</span></div>
+        </div>
+        <div class="sec-title">Watch</div>
+        <div class="side-box">
+          {% for s in streams %}<a class="rank-row" href="https://www.twitch.tv/{{ s.channel }}" target="_blank" rel="noopener"><span class="live">LIVE</span> Twitch · {{ s.channel }}</a>{% endfor %}
+          {% for v in videos %}<a class="rank-row" href="https://www.youtube.com/watch?v={{ v.youtube_id }}" target="_blank" rel="noopener">YouTube · {{ v.title|truncatechars:32 }}</a>{% endfor %}
+          {% if not streams and not videos %}<div class="empty">No streams or videos yet.</div>{% endif %}
+        </div>
+      </div>
+    </div>
+
+    <div class="sec-title">Match stats</div>
+    {% if maps %}
+      {% for item in maps %}
+      <div class="side-box mb-2">
+        <div class="ev-head">{{ item.map.game_map.name }} <span class="ms-auto">{{ item.r1 }} : {{ item.r2 }}</span></div>
+        <div class="px-3 pt-2 fw-bold small muted">{{ series.team1 }}</div>
+        {% include "web/_stats_table.html" with stats=item.stats1 %}
+        <div class="px-3 pt-2 fw-bold small muted">{{ series.team2 }}</div>
+        {% include "web/_stats_table.html" with stats=item.stats2 %}
+      </div>
+      {% endfor %}
+    {% else %}
+      <div class="side-box"><div class="empty">Player match stats (K-D, ADR, KAST, Rating) are not available from the free data source.</div></div>
+    {% endif %}
+
+    <div class="sec-title">Lineups</div>
+    {% for l in lineups %}
+    <div class="side-box mb-2">
+      <div class="ev-head">{% include "web/_logo.html" with logo=l.team.logo_url tag=l.team.tag %} {{ l.team.name }}</div>
+      <div class="lineup">
+        {% for r in l.players %}
+        <a href="{% url 'web:player_detail' r.player.pk %}">
+          {% if r.player.photo_url or r.player.avatar_url %}<img class="ph" src="{% firstof r.player.photo_url r.player.avatar_url %}" alt="">{% else %}<div class="ph" style="{{ r.player.nickname|badge_style }}">{{ r.player.nickname|slice:":2"|upper }}</div>{% endif %}
+          <div class="nm">{% if r.player.country %}<img class="flag" src="{{ r.player.country|flag_url }}" alt="">{% endif %}{{ r.player.nickname }}</div>
+        </a>
+        {% empty %}<div class="empty" style="grid-column:1/-1">Roster is not set for this event.</div>{% endfor %}
+      </div>
+    </div>
+    {% endfor %}
+
+    <div class="sec-title">Head to head</div>
+    <div class="h2h-head">
+      <div><b>{{ h2h_wins.0 }}</b><small>Wins</small></div><div class="t">{{ series.team1 }}</div>
+      <div class="t">{{ series.team2 }}</div><div><b>{{ h2h_wins.1 }}</b><small>Wins</small></div>
+    </div>
+    {% include "web/_results_table.html" with matches=h2h %}
+
+    <div class="sec-title">Form</div>
+    <div class="row g-2">
+      {% for f in forms %}
+      <div class="col-md-6"><div class="side-box info-list">
+        <div><b>{{ f.team.name }}</b><a href="{% url 'web:team_detail' f.team.pk %}">Team page</a></div>
+        <div><span>Wins–Losses</span><span>{{ f.record.wins }}–{{ f.record.losses }}</span></div>
+        <div><span>Win rate</span><span>{% if f.record.win_rate is not None %}{{ f.record.win_rate }}%{% else %}—{% endif %}</span></div>
+        <div><span>Last 5</span><span>{% for x in f.record.form %}<span class="form form-{{ x }}">{{ x }}</span>{% empty %}—{% endfor %}</span></div>
+      </div></div>
+      {% endfor %}
+    </div>
+  </section>
+</div>
+{% endblock %}

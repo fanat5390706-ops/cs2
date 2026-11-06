@@ -1,0 +1,25 @@
+{% extends "web/base.html" %}
+{% load web_extras %}
+{% block title %}Команды{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center flex-wrap gap-2 mb-2">
+  <h1 class="h3 mb-0">Команды</h1>
+  <form class="filters d-flex gap-2" method="get">
+    <input class="form-control form-control-sm" type="search" name="q" value="{{ q }}" placeholder="Название или тег">
+    <button class="btn btn-sm btn-accent" type="submit">Найти</button>
+  </form>
+</div>
+<div class="row g-2">
+  {% for t in teams %}
+  <div class="col-6 col-md-4 col-xl-2">
+    <a class="panel d-block p-3 text-center h-100" href="{% url 'web:team_detail' t.pk %}" style="color:inherit">
+      {% include "web/_logo.html" with logo=t.logo_url tag=t.tag size="lg" %}
+      <div class="fw-bold mt-2 text-truncate">{{ t.name }}</div>
+      <div class="muted small">{% if t.country %}<img class="flag" src="{{ t.country|flag_url }}" alt="">{% endif %}игроков: {{ t.active_players }}</div>
+    </a>
+  </div>
+  {% empty %}<div class="empty">Команды не найдены.</div>{% endfor %}
+</div>
+{% include "web/_pager.html" %}
+{% endblock %}

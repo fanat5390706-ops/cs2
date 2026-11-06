@@ -1,0 +1,398 @@
+/* ХЛТВ 2.0 — тема: тёмный фон и красный акцент, плотная вёрстка порталов в стиле HLTV */
+:root {
+  --bg: #150a0c;
+  --bg-2: #0f0608;
+  --panel: #211114;
+  --panel-2: #2e181c;
+  --line: #4a2630;
+  --text: #ffffff;
+  --muted: #d1a5ab;
+  --accent: #e63946;
+  --accent-2: #ff9aa2;
+  --win: #34d399;
+  --loss: #f87171;
+  --gold: #fbbf24;
+  --shadow: 0 2px 12px rgba(0, 0, 0, .35);
+  --radius: 10px;
+}
+
+html { font-size: 15.5px; }
+body { background: var(--bg); color: var(--text); line-height: 1.4; }
+a { color: var(--accent-2); text-decoration: none; transition: color .15s; }
+a:hover { color: #fff; }
+.muted { color: var(--muted); }
+.container { max-width: 1320px; }
+h1, h2, h3, h4 { font-weight: 800; letter-spacing: .2px; }
+img { max-width: 100%; }
+
+/* ---------- Верхняя панель ---------- */
+.site-nav { background: var(--bg-2); border-bottom: 1px solid var(--line); padding: 0; margin-bottom: 1rem !important; }
+.site-nav .container { min-height: 54px; }
+.brand { font-weight: 900; font-size: 1.45rem; letter-spacing: .5px; color: #fff !important; padding: 0; margin-right: 1.25rem; }
+.brand span { color: var(--accent); }
+.site-nav .nav-link { color: var(--muted); font-weight: 700; font-size: .92rem; padding: 1rem .8rem; border-bottom: 3px solid transparent; transition: all .15s; }
+.site-nav .nav-link:hover { color: #fff; background: rgba(230, 57, 70, .12); }
+.site-nav .nav-link.active { color: #fff; border-bottom-color: var(--accent); background: rgba(230, 57, 70, .18); }
+.search-input { background: var(--panel); border: 1px solid var(--line); color: #fff; min-width: 240px; border-radius: 8px; }
+.search-input::placeholder { color: var(--muted); }
+.search-input:focus { background: var(--panel); color: #fff; border-color: var(--accent); box-shadow: 0 0 0 3px rgba(230, 57, 70, .3); }
+.btn-accent { background: var(--accent); border-color: var(--accent); color: #fff; font-weight: 700; }
+.btn-accent:hover { background: #f25c68; border-color: #f25c68; color: #fff; }
+
+/* ---------- Панели ---------- */
+.panel { background: var(--panel); border: 1px solid var(--line); border-radius: var(--radius); overflow: hidden; box-shadow: var(--shadow); }
+.panel + .panel { margin-top: .75rem; }
+.panel-head { padding: .5rem .85rem; border-bottom: 1px solid var(--line); font-weight: 800; font-size: .85rem;
+  text-transform: uppercase; letter-spacing: .6px; display: flex; justify-content: space-between; align-items: center;
+  background: var(--panel-2); }
+.panel-head a { text-transform: none; font-weight: 600; letter-spacing: 0; font-size: .85rem; }
+.panel-body { padding: .75rem .85rem; }
+.empty { padding: .75rem .85rem; color: var(--muted); }
+
+/* ---------- Логотипы и флаги ---------- */
+.tlogo { width: 26px; height: 26px; object-fit: contain; flex: none; }
+.tlogo.lg { width: 72px; height: 72px; }
+.tlogo.md { width: 40px; height: 40px; }
+.tbadge { display: inline-flex; align-items: center; justify-content: center; width: 26px; height: 26px;
+  border-radius: 6px; font-size: .62rem; font-weight: 800; color: #fff; flex: none; border: 1px solid rgba(255, 255, 255, .18); }
+.tbadge.lg { width: 72px; height: 72px; font-size: 1.1rem; border-radius: 14px; }
+.tbadge.md { width: 40px; height: 40px; font-size: .8rem; }
+.flag { width: 20px; height: 15px; border-radius: 2px; vertical-align: -2px; margin-right: 5px; }
+.avatar-sm { width: 28px; height: 28px; border-radius: 50%; object-fit: cover; background: var(--panel-2); border: 1px solid var(--line); vertical-align: middle; margin-right: 6px; }
+.avatar-sm.ph { display: inline-flex; align-items: center; justify-content: center; font-size: .65rem; font-weight: 800; color: #fff; }
+
+/* ---------- Главная: сетка ---------- */
+.home-grid { display: grid; grid-template-columns: 290px 1fr; gap: .75rem; align-items: start; }
+.home-grid > div > .panel + .panel { margin-top: .75rem; }
+.hero-banner { position: relative; min-height: 270px; border-radius: var(--radius); overflow: hidden; border: 1px solid var(--line);
+  background: linear-gradient(135deg, #7a1f2a 0%, #211114 60%, #150a0c 100%); display: flex; align-items: flex-end; box-shadow: var(--shadow); }
+.hero-banner .bg { position: absolute; inset: 0; background-size: contain; background-repeat: no-repeat; background-position: right 8% center; opacity: .35; }
+.hero-banner .content { position: relative; padding: 1.5rem; max-width: 640px; }
+.hero-banner h1 { font-size: 2.2rem; font-weight: 900; margin: .25rem 0; }
+.hero-banner .eyebrow { color: var(--accent-2); font-weight: 800; text-transform: uppercase; letter-spacing: 1px; font-size: .8rem; }
+.counters { display: flex; gap: .5rem; margin-top: .75rem; }
+.counter { text-align: center; padding: .35rem .8rem; background: rgba(255, 255, 255, .08); border-radius: 8px; border: 1px solid var(--line); }
+.counter b { display: block; font-size: 1.35rem; line-height: 1.1; font-weight: 900; }
+.counter span { font-size: .72rem; color: var(--muted); }
+
+.news-cards { display: grid; grid-template-columns: repeat(3, 1fr); gap: .6rem; padding: .6rem; }
+.news-card { display: block; background: var(--panel-2); border: 1px solid var(--line); border-radius: 8px; overflow: hidden; color: #fff; transition: border-color .15s, transform .15s; }
+.news-card:hover { border-color: var(--accent); color: #fff; transform: translateY(-2px); }
+.news-card .pic { height: 110px; background: linear-gradient(135deg, #7a1f2a, #211114) center/cover; }
+.news-card .t { padding: .5rem .6rem; font-weight: 700; font-size: .9rem; line-height: 1.25; }
+.news-card .m { padding: 0 .6rem .5rem; color: var(--muted); font-size: .75rem; }
+
+/* ---------- Компактные матчи (боковые списки) ---------- */
+.mini-match { display: grid; grid-template-columns: 1fr auto; gap: .5rem; padding: .35rem .85rem; border-bottom: 1px solid var(--line); align-items: center; color: #fff; }
+.mini-match:last-child { border-bottom: 0; }
+.mini-match:hover { background: rgba(230, 57, 70, .14); color: #fff; }
+.mini-match .tn { display: flex; align-items: center; gap: .45rem; font-weight: 600; font-size: .92rem; min-width: 0; }
+.mini-match .tn span:last-child { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.mini-match .sc { font-weight: 900; font-variant-numeric: tabular-nums; text-align: right; min-width: 1.4rem; }
+.mini-match .sc.win { color: var(--win); }
+
+/* ---------- Строка матча (страницы матчей/результатов) ---------- */
+.match-row { display: grid; grid-template-columns: 70px 1fr 74px 1fr 150px; gap: .6rem; align-items: center;
+  padding: .35rem .85rem; border-bottom: 1px solid var(--line); color: #fff; font-size: .95rem; transition: background .12s; }
+.match-row:last-child { border-bottom: 0; }
+.match-row:hover { background: rgba(230, 57, 70, .14); color: #fff; }
+.mr-time { font-size: .82rem; line-height: 1.2; color: var(--muted); }
+.mr-team { display: flex; align-items: center; gap: .5rem; font-weight: 700; min-width: 0; }
+.mr-team.right { justify-content: flex-end; text-align: right; }
+.mr-team span:not(.tbadge) { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.mr-team.win { color: var(--win); }
+.mr-team.lose { color: var(--muted); font-weight: 600; }
+.mr-score { text-align: center; font-weight: 900; font-size: 1.05rem; background: var(--bg); border: 1px solid var(--line);
+  border-radius: 6px; padding: .1rem 0; font-variant-numeric: tabular-nums; }
+.mr-event { color: var(--accent-2); font-size: .82rem; text-align: right; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.day-head { padding: .3rem .85rem; background: var(--bg-2); color: var(--accent-2); font-weight: 800; font-size: .8rem; text-transform: uppercase; letter-spacing: .6px; border-bottom: 1px solid var(--line); }
+.live { color: #fff; background: #ff3b3b; font-size: .62rem; font-weight: 800; border-radius: 4px; padding: 0 .35rem; display: inline-block; animation: pulse 1.4s infinite; letter-spacing: .5px; }
+@keyframes pulse { 50% { opacity: .55; } }
+
+/* ---------- Вкладки ---------- */
+.tabs { display: flex; flex-wrap: wrap; gap: .25rem; border-bottom: 1px solid var(--line); margin-bottom: .75rem; }
+.tabs a { padding: .55rem 1rem; color: var(--muted); font-weight: 700; border-bottom: 3px solid transparent; margin-bottom: -1px; }
+.tabs a:hover { color: #fff; }
+.tabs a.active { color: #fff; border-bottom-color: var(--accent); background: rgba(230, 57, 70, .14); border-radius: 6px 6px 0 0; }
+.tabs .cnt { background: var(--panel-2); border-radius: 999px; padding: 0 .5rem; font-size: .75rem; margin-left: .25rem; }
+
+/* ---------- Таблицы ---------- */
+.tbl { width: 100%; border-collapse: collapse; font-size: .95rem; }
+.tbl th { background: var(--panel-2); color: var(--accent-2); font-size: .72rem; font-weight: 800; text-transform: uppercase;
+  letter-spacing: .6px; padding: .35rem .6rem; border-bottom: 2px solid var(--accent); white-space: nowrap; }
+.tbl td { padding: .3rem .6rem; border-bottom: 1px solid var(--line); vertical-align: middle; }
+.tbl tr:last-child td { border-bottom: 0; }
+.tbl tbody tr { transition: background .1s; }
+.tbl tbody tr:nth-child(even) { background: rgba(255, 255, 255, .025); }
+.tbl tbody tr:hover { background: rgba(230, 57, 70, .16); }
+.tbl td a { font-weight: 700; color: #fff; }
+.tbl td a:hover { color: var(--accent-2); }
+.num { text-align: right; font-variant-numeric: tabular-nums; }
+.tbl td.num { font-weight: 600; }
+.pos { color: var(--win); font-weight: 800; }
+.neg { color: var(--loss); font-weight: 800; }
+.hi { color: var(--gold); font-weight: 900; }
+.rank { color: var(--muted); width: 1.8rem; font-weight: 700; }
+
+/* ---------- Страница матча ---------- */
+.scoreboard { display: grid; grid-template-columns: 1fr auto 1fr; gap: 1rem; align-items: center; text-align: center; }
+.scoreboard .team { display: flex; flex-direction: column; align-items: center; gap: .35rem; font-weight: 800; font-size: 1.2rem; }
+.scoreboard .team.win { color: var(--win); }
+.scoreboard .team.lose { color: var(--muted); }
+.bigscore { font-size: 2.6rem; font-weight: 900; letter-spacing: 2px; }
+.rbar { display: flex; height: 8px; border-radius: 4px; overflow: hidden; background: var(--bg); }
+.rbar .a { background: var(--accent); }
+.rbar .b { background: #a6232f; flex: 1; }
+.mini-bar { height: 6px; border-radius: 3px; background: var(--bg); min-width: 80px; }
+.mini-bar div { height: 100%; border-radius: 3px; background: var(--accent); }
+.info-list { padding: .5rem .85rem; }
+.info-list div { display: flex; justify-content: space-between; gap: 1rem; padding: .25rem 0; border-bottom: 1px solid var(--line); font-size: .92rem; }
+.info-list div:last-child { border-bottom: 0; }
+.info-list span:first-child { color: var(--muted); }
+
+/* ---------- Игрок / команда ---------- */
+.player-head { display: flex; gap: 1rem; align-items: center; padding: 1rem 1.25rem;
+  background: linear-gradient(120deg, #6e1c27 0%, var(--panel) 75%); border: 1px solid var(--line); border-radius: var(--radius);
+  box-shadow: var(--shadow); margin-bottom: .75rem; }
+.avatar { width: 96px; height: 96px; border-radius: 14px; object-fit: cover; border: 2px solid var(--accent); flex: none; background: var(--panel-2); }
+.avatar-ph { display: flex; align-items: center; justify-content: center; font-size: 2rem; font-weight: 900; color: #fff; }
+.player-head h1 { margin: 0; font-size: 2rem; font-weight: 900; }
+.player-meta { display: flex; flex-wrap: wrap; gap: .25rem 1.1rem; color: var(--muted); margin-top: .25rem; }
+.player-meta b { color: #fff; font-weight: 700; }
+.stat-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: .5rem; margin-bottom: .75rem; }
+.stat-card { background: var(--panel); border: 1px solid var(--line); border-radius: 8px; text-align: center; padding: .5rem .4rem; box-shadow: var(--shadow); }
+.stat-card .value { font-size: 1.7rem; font-weight: 900; line-height: 1.1; font-variant-numeric: tabular-nums; }
+.stat-card .label { color: var(--muted); font-size: .72rem; text-transform: uppercase; letter-spacing: .6px; font-weight: 700; }
+.stat-card.accent { background: linear-gradient(160deg, var(--accent), #a6232f); border-color: var(--accent-2); }
+.stat-card.accent .label { color: #ffe9ea; }
+.lineup { display: grid; grid-template-columns: repeat(5, 1fr); gap: .5rem; padding: .6rem; }
+.lineup a { display: block; text-align: center; background: var(--panel-2); border: 1px solid var(--line); border-radius: 8px; padding: .5rem .3rem; color: #fff; transition: border-color .15s; }
+.lineup a:hover { border-color: var(--accent); color: #fff; }
+.lineup .ph { width: 72px; height: 72px; border-radius: 50%; object-fit: cover; margin: 0 auto .3rem; display: flex; align-items: center; justify-content: center; font-weight: 900; font-size: 1.2rem; background: var(--panel); border: 2px solid var(--line); }
+.lineup .nm { font-weight: 800; }
+.lineup .rl { color: var(--muted); font-size: .78rem; }
+
+/* ---------- Карточки турниров и видео ---------- */
+.event-card { display: block; background: var(--panel); border: 1px solid var(--line); border-radius: var(--radius); overflow: hidden; color: #fff; height: 100%; transition: border-color .15s, transform .15s; box-shadow: var(--shadow); }
+.event-card:hover { border-color: var(--accent); color: #fff; transform: translateY(-2px); }
+.event-card .banner { height: 120px; background: linear-gradient(135deg, #7a1f2a, #211114); display: flex; align-items: center; justify-content: center; }
+.event-card .banner img { max-height: 90px; max-width: 70%; object-fit: contain; }
+.event-card .body { padding: .6rem .8rem; }
+.vcard { display: block; color: #fff; }
+.vcard img { width: 100%; aspect-ratio: 16 / 9; object-fit: cover; border-radius: 8px; border: 1px solid var(--line); background: var(--panel-2); }
+.vcard .vtitle { display: -webkit-box; font-size: .82rem; font-weight: 700; margin-top: .25rem; line-height: 1.25; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+.vcard:hover .vtitle { color: var(--accent-2); }
+.vcard:hover img { border-color: var(--accent); }
+.news-feature { display: block; position: relative; min-height: 320px; border-radius: var(--radius); overflow: hidden; border: 1px solid var(--line);
+  background: linear-gradient(135deg, #7a1f2a, #211114) center/cover; color: #fff; }
+.news-feature .shade { position: absolute; inset: 0; background: linear-gradient(180deg, transparent 30%, rgba(21, 10, 12, .95)); }
+.news-feature .txt { position: absolute; left: 0; right: 0; bottom: 0; padding: 1.25rem; }
+.news-feature h2 { font-size: 1.6rem; font-weight: 900; }
+
+/* ---------- Фильтры ---------- */
+.filters .form-control, .filters .form-select { background: var(--panel); border-color: var(--line); color: #fff; }
+.filters .form-control:focus, .filters .form-select:focus { border-color: var(--accent); box-shadow: 0 0 0 3px rgba(230, 57, 70, .25); }
+.pill { display: inline-block; padding: .2rem .8rem; border-radius: 999px; border: 1px solid var(--line); background: var(--panel);
+  color: var(--muted); font-weight: 700; font-size: .85rem; transition: all .15s; }
+.pill.active, .pill:hover { background: var(--accent); border-color: var(--accent); color: #fff; }
+.breadcrumb { font-size: .85rem; margin-bottom: .5rem; }
+.board-row { display: grid; grid-template-columns: 1.6rem 1fr 3.2rem; gap: .5rem; align-items: center; padding: .3rem .85rem; border-bottom: 1px solid var(--line); }
+.board-row:last-child { border-bottom: 0; }
+.board-row .bar { height: 6px; background: var(--bg); border-radius: 3px; margin-top: 3px; }
+.board-row .bar div { height: 100%; background: var(--accent); border-radius: 3px; }
+.site-footer { color: var(--muted); font-size: .8rem; border-top: 1px solid var(--line); padding-top: .75rem; margin-top: 1.25rem; }
+
+@media (max-width: 992px) {
+  .home-grid { grid-template-columns: 1fr; }
+  .match-row { grid-template-columns: 60px 1fr 64px 1fr; }
+  .mr-event { display: none; }
+  .news-cards { grid-template-columns: 1fr; }
+  .lineup { grid-template-columns: repeat(3, 1fr); }
+}
+@media (max-width: 768px) { .stat-grid { grid-template-columns: repeat(3, 1fr); } .search-input { min-width: 0; width: 100%; } }
+@media (max-width: 640px) {
+  .match-row { grid-template-columns: 1fr 60px 1fr; }
+  .mr-time { display: none; }
+  .bigscore { font-size: 2rem; }
+  .player-head { flex-direction: column; text-align: center; }
+}
+
+/* ---------- Таблицы матчей (как на HLTV) ---------- */
+.mtable td { padding: .4rem .6rem; }
+.mt-time { width: 64px; color: var(--muted); font-weight: 700; }
+.mt-team a { display: flex; align-items: center; gap: .5rem; font-weight: 700; color: #fff; }
+.mt-team.won a { color: var(--win); }
+.mt-score { text-align: center; white-space: nowrap; min-width: 84px; }
+.mt-score a { color: #fff; }
+.mt-event { max-width: 260px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.chip { display: inline-block; padding: .1rem .7rem; border-radius: 6px; border: 1px solid var(--accent); color: var(--accent-2); font-size: .78rem; font-weight: 800; text-transform: uppercase; }
+.chip:hover { background: var(--accent); color: #fff; }
+.chip-live { background: #ff3b3b; border-color: #ff3b3b; color: #fff; }
+.hero-carousel { border-radius: var(--radius); overflow: hidden; }
+.hero-carousel .carousel-control-prev, .hero-carousel .carousel-control-next { width: 8%; }
+
+/* ---------- шапка как на макете ---------- */
+.brand-mark { display:inline-block; margin-right:.45rem; color:var(--accent-2); font-size:.9em; transform:rotate(90deg); }
+.nav-signin { color:#e3c0c4; font-size:.9rem; }
+.nav-signin:hover { color:#fff; }
+.site-nav .dropdown-menu { background:var(--panel-2); border:1px solid var(--line); }
+.site-nav .dropdown-item { color:#ffe6e8; font-size:.9rem; }
+.site-nav .dropdown-item:hover { background:var(--accent); color:#fff; }
+.site-nav .dropdown-toggle::after { margin-left:.35rem; }
+
+/* ---------- страница команды ---------- */
+.team-head { display:flex; align-items:center; gap:1rem; padding:1rem 1.25rem; margin-bottom:.75rem; background:var(--panel); border:1px solid var(--line); border-radius:var(--radius); }
+.team-head h1 { margin:0; font-size:1.8rem; font-weight:900; }
+.tlogo.xl, .tbadge.xl { width:64px; height:64px; font-size:1.4rem; }
+.form { display:inline-block; width:22px; height:22px; line-height:22px; text-align:center; border-radius:4px; font-size:.75rem; font-weight:800; margin-right:3px; color:#fff; }
+.form-W { background:#22a35a; } .form-L { background:#d6453d; }
+.event-card a { display:block; color:#fff; }
+.event-card a:hover { color:#fff; }
+
+.tier-chips { display:flex; gap:.4rem; align-items:center; margin-bottom:.6rem; }
+.tier-chips a { padding:.1rem .65rem; border:1px solid var(--line); border-radius:6px; color:#e3c0c4; font-weight:700; font-size:.85rem; }
+.tier-chips a.active, .tier-chips a:hover { background:var(--accent); border-color:var(--accent); color:#fff; }
+.stats-layout { display:grid; grid-template-columns:200px 1fr; gap:.75rem; }
+.stats-menu a { display:block; padding:.5rem .8rem; border-radius:6px; color:#e3c0c4; font-weight:600; }
+.stats-menu a.active, .stats-menu a:hover { background:var(--panel-2); color:#fff; border-left:3px solid var(--accent); }
+@media (max-width: 768px) { .stats-layout { grid-template-columns:1fr; } }
+
+/* ---------- Главная и Matches в стиле HLTV (красная палитра) ---------- */
+.hl-grid { display:grid; grid-template-columns: 230px minmax(0,1fr) 270px; gap:.9rem; align-items:start; }
+.hl-grid.two { grid-template-columns: 250px minmax(0,1fr); }
+@media (max-width: 1100px) { .hl-grid, .hl-grid.two { grid-template-columns: 1fr; } }
+.side-title { display:flex; justify-content:space-between; align-items:center; margin:.9rem 0 .35rem; font-size:.75rem; font-weight:800; letter-spacing:.8px; text-transform:uppercase; color:var(--muted); }
+.side-title:first-child { margin-top:0; }
+.side-title a { text-transform:none; letter-spacing:0; font-weight:600; font-size:.8rem; }
+.side-box { background:var(--panel); border:1px solid var(--line); border-radius:8px; overflow:hidden; }
+.side-btn { display:block; text-align:center; padding:.5rem; background:var(--panel-2); color:#f2cfd3; font-size:.85rem; font-weight:600; }
+.side-btn:hover { background:var(--accent); color:#fff; }
+.rank-row, .ev-row, .td-row, .news-row { display:flex; align-items:center; gap:.5rem; padding:.45rem .65rem; border-bottom:1px solid var(--line); color:#fff; }
+.rank-row:hover, .ev-row:hover, .td-row:hover, .news-row:hover { background:var(--panel-2); color:#fff; }
+.rank-row .n { color:var(--muted); width:1.4rem; }
+.rank-row .pts { margin-left:auto; color:var(--muted); font-size:.8rem; }
+.ev-name { display:flex; flex-direction:column; line-height:1.15; font-weight:700; font-size:.88rem; }
+.ev-name small { color:var(--muted); font-weight:500; }
+.ev-row .live { margin-left:auto; }
+.td-row { justify-content:space-between; }
+.td-teams { display:flex; flex-direction:column; gap:.2rem; font-size:.88rem; }
+.td-t { display:flex; align-items:center; gap:.4rem; }
+.td-time { color:var(--muted); font-size:.85rem; }
+.td-score { display:flex; flex-direction:column; text-align:right; font-weight:800; }
+.pos { color:var(--win); } .neg { color:var(--loss); }
+.sec-title { margin:1rem 0 .4rem; font-weight:800; font-size:1.05rem; }
+.sec-h { font-size:1.5rem; margin:.9rem 0 .6rem; }
+.news-rows { background:var(--panel); border:1px solid var(--line); border-radius:8px; overflow:hidden; }
+.news-row { justify-content:space-between; gap:1rem; padding:.6rem .85rem; }
+.news-row .nt { font-weight:700; font-size:1rem; }
+.news-row .nm { flex:none; text-align:right; color:var(--muted); font-size:.75rem; line-height:1.2; }
+.hero-live { position:absolute; top:12px; right:12px; z-index:2; }
+.ev-group { background:var(--panel); border:1px solid var(--line); border-radius:8px; margin-bottom:.7rem; overflow:hidden; }
+.ev-head { display:flex; align-items:center; gap:.5rem; padding:.55rem .85rem; background:var(--panel-2); font-weight:800; color:#fff; }
+.m-row { display:grid; grid-template-columns: 70px 1fr auto 1fr; align-items:center; gap:.8rem; padding:.5rem .85rem; border-top:1px solid var(--line); color:#fff; }
+.m-row:hover { background:var(--panel-2); color:#fff; }
+.m-time { display:flex; flex-direction:column; font-weight:700; color:#f2cfd3; }
+.m-time small { color:var(--muted); font-weight:600; }
+.m-teams { display:flex; flex-direction:column; gap:.25rem; font-weight:600; }
+.m-teams > span { display:flex; align-items:center; gap:.5rem; }
+.m-score { display:flex; flex-direction:column; text-align:right; font-weight:900; font-size:1.05rem; }
+.m-stage { color:var(--muted); font-size:.8rem; text-align:right; }
+.cal { background:var(--panel); border:1px solid var(--line); border-radius:8px; overflow:hidden; }
+.cal-head { display:flex; justify-content:space-between; padding:.4rem .7rem; background:var(--panel-2); font-weight:800; font-size:.8rem; }
+.cal table { width:100%; text-align:center; font-size:.8rem; }
+.cal th { color:var(--muted); font-weight:600; padding:.25rem 0; }
+.cal td a { display:block; padding:.3rem 0; color:#fff; font-weight:600; }
+.cal td.out a { color:#8a6168; }
+.cal td.today a { background:var(--accent); border-radius:4px; }
+.cal td.picked a { outline:2px solid var(--accent-2); border-radius:4px; }
+.res-table td { padding:.45rem .6rem; }
+.res-table .mt-team { width:30%; }
+.mt-team.right a { justify-content:flex-end; }
+.res-score { width:90px; text-align:center; white-space:nowrap; }
+.res-score a { color:#fff; font-weight:800; }
+
+/* ---------- Профиль игрока ---------- */
+.pl-card { display:grid; grid-template-columns: 230px 1fr; background:var(--panel); border:1px solid var(--line); border-radius:8px; overflow:hidden; margin-bottom:.8rem; }
+.pl-photo { position:relative; background:linear-gradient(160deg,#6e1c27,#150a0c); min-height:230px; display:flex; align-items:flex-end; justify-content:center; }
+.pl-photo img { width:100%; height:230px; object-fit:cover; object-position:top; }
+.pl-photo .avatar-ph { width:100%; height:230px; display:flex; align-items:center; justify-content:center; font-size:4rem; font-weight:900; }
+.pl-flags { position:absolute; top:8px; left:8px; display:flex; flex-direction:column; gap:6px; }
+.pl-flags .flag { width:28px; height:auto; }
+.pl-info { padding:1rem 1.2rem; }
+.pl-info h1 { font-size:2rem; margin:0; }
+.pl-links { display:flex; gap:.6rem; margin-top:.5rem; }
+.pl-links a { padding:.15rem .7rem; border:1px solid var(--line); border-radius:6px; font-size:.85rem; }
+.sbar { margin:.35rem 0; }
+.sb-head { display:flex; justify-content:space-between; font-weight:700; }
+.sb-track { height:5px; background:var(--panel-2); border-radius:3px; }
+.sb-track div { height:100%; background:var(--accent); border-radius:3px; }
+.pm-row { display:flex; align-items:center; gap:.6rem; padding:.55rem .75rem; border-bottom:1px solid var(--line); color:#fff; }
+.pm-row:hover { background:var(--panel-2); color:#fff; }
+.pm-name { display:flex; flex-direction:column; flex:1; line-height:1.15; font-weight:700; }
+.pm-name small { color:var(--muted); font-weight:500; }
+.pm-row.res { border-right:4px solid var(--accent); }
+@media (max-width: 700px) { .pl-card { grid-template-columns: 1fr; } }
+
+/* ---------- Страница матча ---------- */
+.mh { display:grid; grid-template-columns: 1fr 240px 1fr; align-items:center; text-align:center; background:linear-gradient(180deg,#2e181c,#211114); border:1px solid var(--line); border-radius:8px; padding:1.2rem; }
+.mh-team { display:flex; flex-direction:column; align-items:center; gap:.4rem; color:#fff; font-size:1.3rem; font-weight:800; }
+.mh-s { font-size:2.4rem; line-height:1; }
+.mh-time { font-size:2.4rem; font-weight:900; line-height:1; }
+.mh-mid { display:flex; flex-direction:column; gap:.15rem; }
+.mh-status { font-weight:800; margin-top:.4rem; }
+.map-row { display:flex; align-items:center; gap:.7rem; padding:.5rem .85rem; background:var(--panel); border:1px solid var(--line); border-radius:8px; margin-bottom:.35rem; font-weight:800; }
+.map-name { flex:1; }
+.h2h-head { display:grid; grid-template-columns: 90px 1fr 1fr 90px; align-items:center; text-align:center; background:var(--panel); border:1px solid var(--line); border-radius:8px; padding:.6rem; margin-bottom:.4rem; }
+.h2h-head b { display:block; font-size:1.5rem; }
+.h2h-head small { color:var(--muted); }
+.h2h-head .t { font-weight:700; }
+@media (max-width: 700px) { .mh { grid-template-columns: 1fr; gap:1rem; } }
+
+/* ---------- Stats, события, трансляции ---------- */
+.nav-side { display:block; padding:.55rem .85rem; color:#e3c0c4; border-bottom:1px solid var(--line); font-weight:600; }
+.nav-side:last-child { border-bottom:0; }
+.nav-side:hover, .nav-side.active { background:var(--panel-2); color:#fff; border-left:3px solid var(--accent); }
+.stat-table thead th { background:var(--panel-2); color:#fff; padding:.55rem .75rem; }
+.stat-table td { padding:.5rem .75rem; }
+.ev-hero { position:relative; display:flex; align-items:center; gap:1.2rem; padding:1.2rem 1.5rem; min-height:150px; background:linear-gradient(135deg,#6e1c27,#211114); border:1px solid var(--line); border-radius:8px 8px 0 0; }
+.ev-hero img { max-height:110px; max-width:240px; object-fit:contain; }
+.ev-hero h1 { font-size:2rem; margin:0; }
+.ev-tabs { margin:0; border-radius:0; background:var(--panel); }
+.ev-info { display:grid; grid-template-columns: repeat(5, 1fr); gap:.5rem; padding:.8rem 1rem; background:var(--panel); border:1px solid var(--line); border-top:0; border-radius:0 0 8px 8px; margin-bottom:.8rem; }
+.ev-info small { display:block; color:var(--muted); font-size:.72rem; }
+.ev-info b { font-size:1rem; }
+.teams-attending { display:flex; flex-wrap:wrap; gap:.5rem; }
+.teams-attending a { display:flex; align-items:center; gap:.5rem; padding:.4rem .75rem; background:var(--panel); border:1px solid var(--line); border-radius:8px; color:#fff; font-weight:600; }
+.teams-attending a:hover { border-color:var(--accent); }
+.streams-box { display:grid; grid-template-columns: minmax(0,1fr) minmax(0,1.3fr); gap:1rem; background:var(--panel); border:1px solid var(--line); border-radius:8px; padding:1rem; }
+.now-playing iframe { width:100%; aspect-ratio:16/9; border:0; border-radius:6px; background:#000; }
+.np-name { display:flex; justify-content:space-between; margin-top:.4rem; }
+.stream-grid { display:grid; grid-template-columns: repeat(2, minmax(0,1fr)); gap:.4rem; align-content:start; max-height:330px; overflow:auto; }
+.stream-chip { display:flex; justify-content:space-between; padding:.4rem .6rem; background:var(--panel-2); border:1px solid var(--line); border-radius:6px; color:#fff; font-weight:600; font-size:.88rem; }
+.stream-chip:hover { border-color:var(--accent); color:#fff; }
+.stream-chip small { color:var(--muted); }
+@media (max-width: 800px) { .streams-box { grid-template-columns: 1fr; } .ev-info { grid-template-columns: repeat(2, 1fr); } }
+
+/* ---------- Верхняя панель: выпадающие меню по наведению (десктоп) и «Live» ---------- */
+.site-nav .dropdown-menu { background: var(--bg-2); border: 1px solid var(--line); border-top: 3px solid var(--accent); border-radius: 0 0 8px 8px; margin-top: 0; min-width: 180px; }
+.site-nav .dropdown-item { color: #e3c0c4; font-weight: 600; font-size: .9rem; padding: .5rem 1rem; }
+.site-nav .dropdown-item:hover { background: var(--panel-2); color: #fff; }
+.site-nav .dropdown-divider { border-color: var(--line); }
+@media (min-width: 992px) {
+  .site-nav .hover-menu:hover > .dropdown-menu { display: block; }
+}
+.nav-live { color: #fff !important; }
+.live-dot { display: inline-block; width: 8px; height: 8px; border-radius: 50%; background: var(--accent); margin-right: .4rem; animation: livepulse 1.4s infinite; }
+@keyframes livepulse { 0% { box-shadow: 0 0 0 0 rgba(230,57,70,.7); } 70% { box-shadow: 0 0 0 7px rgba(230,57,70,0); } 100% { box-shadow: 0 0 0 0 rgba(230,57,70,0); } }
+
+/* ---------- Карты: собственные плитки (градиенты), распределение сыгранных карт ---------- */
+.map-ancient { --a:#2f4a2c; --b:#7a5b32; } .map-anubis { --a:#8b6a3d; --b:#2f4b5c; } .map-dust2 { --a:#c9a566; --b:#7a5a35; }
+.map-inferno { --a:#a55a32; --b:#4b2a1e; } .map-mirage { --a:#c39b5b; --b:#6d4a3a; } .map-nuke { --a:#5d7384; --b:#2a3640; }
+.map-overpass { --a:#4d7a74; --b:#3a3f48; } .map-vertigo { --a:#3f6fa5; --b:#1e2c44; } .map-train { --a:#8a8f94; --b:#5a2f2f; } .map-cache { --a:#5a7a4e; --b:#33403a; }
+.map-tiles { display:grid; grid-template-columns:repeat(5, 1fr); gap:.5rem; }
+.map-tile { height:84px; border-radius:8px; border:1px solid var(--line); background:linear-gradient(135deg, var(--a), var(--b)); display:flex; align-items:flex-end; }
+.map-tile span { width:100%; padding:.35rem .6rem; font-weight:800; background:linear-gradient(transparent, rgba(0,0,0,.65)); border-radius:0 0 8px 8px; }
+.dist-row { display:grid; grid-template-columns:90px 1fr 50px; gap:.6rem; align-items:center; margin:.3rem 0; }
+.dist-bar { background:var(--panel-2); border-radius:4px; height:16px; overflow:hidden; }
+.dist-bar i { display:block; height:100%; background:linear-gradient(90deg, var(--a), var(--b)); }
+@media (max-width: 768px) { .map-tiles { grid-template-columns:repeat(2, 1fr); } }

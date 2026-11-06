@@ -1,0 +1,16 @@
+{% load web_extras %}
+<table class="tbl res-table">
+  <tbody>
+    {% for m in matches %}
+    <tr>
+      <td class="mt-team right {% if m.winner_entry_id == m.entry1_id %}won{% endif %}"><a href="{% url 'web:match_detail' m.match_id %}"><span>{{ m.team1 }}</span>{% include "web/_logo.html" with logo=m.logo1 tag=m.tag1 %}</a></td>
+      <td class="res-score"><a href="{% url 'web:match_detail' m.match_id %}"><b class="{% if m.winner_entry_id == m.entry1_id %}pos{% else %}neg{% endif %}">{{ m.maps_team1 }}</b> – <b class="{% if m.winner_entry_id == m.entry2_id %}pos{% else %}neg{% endif %}">{{ m.maps_team2 }}</b></a></td>
+      <td class="mt-team {% if m.winner_entry_id == m.entry2_id %}won{% endif %}"><a href="{% url 'web:match_detail' m.match_id %}">{% include "web/_logo.html" with logo=m.logo2 tag=m.tag2 %}<span>{{ m.team2 }}</span></a></td>
+      <td class="mt-event"><a href="{% url 'web:tournament_detail' m.tournament_id %}">{{ m.event }}</a></td>
+      <td class="muted small text-end">BO{{ m.best_of }}</td>
+    </tr>
+    {% empty %}
+    <tr><td colspan="5" class="empty">No results yet.</td></tr>
+    {% endfor %}
+  </tbody>
+</table>

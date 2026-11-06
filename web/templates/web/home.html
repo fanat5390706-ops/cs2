@@ -1,0 +1,108 @@
+{% extends "web/base.html" %}
+{% load web_extras %}
+{% block title %}ХЛТВ 2.0 — CS2 matches, results and stats{% endblock %}
+
+{% block head %}<meta http-equiv="refresh" content="60">{% endblock %}
+
+{% block content %}
+<div class="hl-grid">
+  <aside class="hl-left">
+    <div class="side-title">Ranking <small class="fw-normal">Valve VRS</small></div>
+    <div class="side-box">
+      {% for t in ranking|slice:":5" %}
+      <a class="rank-row" href="{% if t.team_id %}{% url 'web:team_detail' t.team_id %}{% else %}{% url 'web:team_list' %}?q={{ t.tag }}{% endif %}"><span class="n">{{ t.position }}.</span>{% include "web/_logo.html" with logo=t.logo tag=t.tag %}<span>{{ t.team }}</span>{% if t.points %}<span class="pts">{{ t.points }}</span>{% endif %}</a>
+      {% empty %}<div class="empty">Run: python manage.py sync_vrs</div>{% endfor %}
+      <a class="side-btn" href="{% url 'web:stats' %}?section=teams">Complete ranking</a>
+    </div>
+
+    <div class="side-title">Events</div>
+    <div class="side-box">
+      {% for t in events_side %}
+      <a class="ev-row" href="{% url 'web:tournament_detail' t.pk %}">
+        {% if t.image_url %}<img class="tlogo" src="{{ t.image_url }}" alt="" loading="lazy">{% else %}<span class="tbadge">{{ t.name|slice:":2"|upper }}</span>{% endif %}
+        <span class="ev-name">{{ t.name|truncatechars:26 }}<small>{% if t.is_live %}live now{% else %}in {{ t.days }} day{{ t.days|pluralize }}{% endif %}</small></span>
+        {% if t.is_live %}<span class="live">LIVE</span>{% endif %}
+      </a>
+      {% empty %}<div class="empty">No events.</div>{% endfor %}
+      <a class="side-btn" href="{% url 'web:tournament_list' %}">Event calendar</a>
+    </div>
+
+    {% if streams %}
+    <div class="side-title">Streams</div>
+    <div class="side-box">
+      {% for s in streams %}<a class="rank-row" href="https://www.twitch.tv/{{ s.channel }}" target="_blank" rel="noopener"><span>{{ s.channel }}</span><span class="pts">{{ s.viewers }}</span></a>{% endfor %}
+    </div>
+    {% endif %}
+  </aside>
+
+  <section class="hl-center">
+    <div id="heroCarousel" class="carousel slide hero-carousel" data-bs-ride="carousel" data-bs-interval="6000">
+      <div class="carousel-inner">
+        {% for t in featured %}
+        <div class="carousel-item {% if forloop.first %}active{% endif %}">
+          <section class="hero-banner">
+            {% if t.image_url %}<div class="bg" style="background-image:url('{{ t.image_url }}')"></div>{% endif %}
+            {% if t.status == "ongoing" %}<span class="live hero-live">LIVE</span>{% endif %}
+            <div class="content">
+              <div class="eyebrow">{{ t.status|status_label }}</div>
+              <h1>{{ t.name }}</h1>
+              <div class="muted">{{ t.start_date|date:"d.m.Y" }} — {{ t.end_date|date:"d.m.Y" }}{% if t.location %} · {{ t.location }}{% endif %}</div>
+              <a class="btn btn-accent btn-sm mt-2" href="{% url 'web:tournament_detail' t.pk %}">View event</a>
+            </div>
+          </section>
+        </div>
+        {% empty %}
+        <div class="carousel-item active"><section class="hero-banner"><div class="content"><h1>ХЛТВ 2.0</h1><div class="muted">No data loaded yet</div></div></section></div>
+        {% endfor %}
+      </div>
+      {% if featured|length > 1 %}
+      <button class="carousel-control-prev" type="button" data-bs-target="#heroCarousel" data-bs-slide="prev"><span class="carousel-control-prev-icon"></span></button>
+      <button class="carousel-control-next" type="button" data-bs-target="#heroCarousel" data-bs-slide="next"><span class="carousel-control-next-icon"></span></button>
+      {% endif %}
+    </div>
+
+    <div class="sec-title">Today's news</div>
+    <div class="news-rows">
+      {% for n in news %}
+      <a class="news-row" href="{{ n.url }}" target="_blank" rel="noopener">
+        <span class="nt">{{ n.title }}</span><span class="nm">{{ n.published_at|timesince }} ago<br>{{ n.source|truncatechars:18 }}</span>
+      </a>
+      {% empty %}<div class="empty">No news yet.</div>{% endfor %}
+      <a class="side-btn" href="{% url 'web:news_list' %}">All news</a>
+    </div>
+
+    {% if videos %}
+    <div class="sec-title">Highlights</div>
+    <div class="row g-2">
+      {% for v in videos %}
+      <div class="col-6 col-md-3"><a class="vcard" href="https://www.youtube.com/watch?v={{ v.youtube_id }}" target="_blank" rel="noopener"><img src="{{ v.thumbnail_url }}" alt=""><span class="vtitle">{{ v.title }}</span></a></div>
+      {% endfor %}
+    </div>
+    {% endif %}
+    <div class="sec-title">Top streams</div>
+    {% if streams %}
+    <div class="streams-box">
+      <div class="now-playing">
+        {% with first=streams.0 %}
+        <iframe src="https://player.twitch.tv/?channel={{ first.channel }}&parent={{ twitch_parent }}&muted=true&autoplay=false" allowfullscreen loading="lazy"></iframe>
+        <div class="np-name"><b>{{ first.channel }}</b><span class="muted">{{ first.viewers }} viewers</span></div>
+        {% endwith %}
+      </div>
+      <div class="stream-grid">
+        {% for s in streams %}<a class="stream-chip" href="https://www.twitch.tv/{{ s.channel }}" target="_blank" rel="noopener"><span>{{ s.channel|truncatechars:14 }}</span><small>({{ s.viewers }})</small></a>{% endfor %}
+      </div>
+    </div>
+    {% else %}
+    <div class="side-box"><div class="empty">No live streams. Add TWITCH_CLIENT_ID and TWITCH_CLIENT_SECRET to .env and run <code>python manage.py sync_twitch</code>.</div></div>
+    {% endif %}
+  </section>
+
+  <aside class="hl-right">
+    <div class="side-title">Today's matches <a href="{% url 'web:matches' %}">All</a></div>
+    <div class="side-box">{% include "web/_today_list.html" with matches=today_matches %}</div>
+
+    <div class="side-title">Recent results <a href="{% url 'web:results' %}">All</a></div>
+    <div class="side-box">{% include "web/_today_list.html" with matches=recent|slice:":8" %}</div>
+  </aside>
+</div>
+{% endblock %}

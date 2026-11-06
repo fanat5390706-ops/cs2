@@ -1,0 +1,1 @@
+{% load web_extras %}{% if logo %}<img class="tlogo {{ size }}" src="{{ logo }}" alt="{{ tag }}" loading="lazy" onerror="this.style.display='none'">{% else %}<span class="tbadge {{ size }}" style="{{ tag|badge_style }}">{{ tag|initials }}</span>{% endif %}

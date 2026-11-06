@@ -1,0 +1,19 @@
+{% load web_extras %}
+{% for m in matches %}
+<a class="mini-match" href="{% url 'web:match_detail' m.match_id %}">
+  <div>
+    <div class="tn">{% include "web/_logo.html" with logo=m.logo1 tag=m.tag1 %}<span>{{ m.team1 }}</span></div>
+    <div class="tn mt-1">{% include "web/_logo.html" with logo=m.logo2 tag=m.tag2 %}<span>{{ m.team2 }}</span></div>
+  </div>
+  <div class="text-end">
+    {% if m.status == 'scheduled' %}
+      <div class="muted small">{{ m.scheduled_at|date:"H:i" }}</div><div class="muted small">{{ m.scheduled_at|date:"d.m" }}</div>
+    {% else %}
+      <div class="sc {% if m.winner_entry_id == m.entry1_id %}win{% endif %}">{{ m.maps_team1 }}</div>
+      <div class="sc {% if m.winner_entry_id == m.entry2_id %}win{% endif %}">{{ m.maps_team2 }}</div>
+    {% endif %}
+  </div>
+</a>
+{% empty %}
+<div class="empty">Нет матчей.</div>
+{% endfor %}

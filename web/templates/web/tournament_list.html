@@ -1,0 +1,32 @@
+{% extends "web/base.html" %}
+{% load web_extras %}
+{% block title %}Events{% endblock %}
+
+{% block content %}
+<h1 class="h2 mb-2">Events</h1>
+<div class="tabs">
+  {% for value, label in tabs %}<a class="{% if status == value %}active{% endif %}" href="{% if value %}?status={{ value }}{% else %}{% url 'web:tournament_list' %}{% endif %}">{{ label }}</a>{% endfor %}
+</div>
+<div class="row g-2">
+  {% for t in tournaments %}
+  <div class="col-6 col-lg-3">
+    <div class="event-card">
+      <a href="{% url 'web:tournament_detail' t.pk %}">
+        <div class="banner">{% if t.image_url %}<img src="{{ t.image_url }}" alt="" loading="lazy">{% else %}<span class="h3 m-0 text-white">{{ t.name|slice:":3"|upper }}</span>{% endif %}</div>
+        <div class="body">
+          <div class="fw-bold">{{ t.name|truncatechars:48 }}</div>
+          <div class="muted small">{{ t.start_date|date:"d.m" }} – {{ t.end_date|date:"d.m.Y" }}</div>
+          {% if t.location %}<div class="muted small">{{ t.location }}</div>{% endif %}
+          {% if t.prize_pool_usd %}<div class="small fw-bold">${{ t.prize_pool_usd|intcomma_space }}</div>{% endif %}
+        </div>
+      </a>
+      <form method="post" action="{% url 'web:tournament_follow' t.pk %}" class="px-2 pb-2">{% csrf_token %}
+        <input type="hidden" name="next" value="{{ request.get_full_path }}">
+        <button class="btn btn-sm w-100 {% if t.pk in followed %}btn-accent{% else %}btn-outline-light{% endif %}" type="submit"
+          {% if not user.is_authenticated %}formaction="{% url 'login' %}" formmethod="get"{% endif %}>{% if t.pk in followed %}Following{% else %}Follow{% endif %}</button>
+      </form>
+    </div>
+  </div>
+  {% empty %}<div class="empty">No events.</div>{% endfor %}
+</div>
+{% endblock %}

@@ -1,0 +1,7 @@
+{% if pages > 1 %}
+<nav class="d-flex justify-content-center align-items-center gap-2 my-3" aria-label="Страницы">
+  {% if page > 1 %}<a class="pill" href="?{% if base_query %}{{ base_query }}&{% endif %}page={{ page|add:'-1' }}">←</a>{% endif %}
+  <span class="muted">Страница {{ page }} из {{ pages }} · всего {{ total }}</span>
+  {% if page < pages %}<a class="pill" href="?{% if base_query %}{{ base_query }}&{% endif %}page={{ page|add:'1' }}">→</a>{% endif %}
+</nav>
+{% endif %}

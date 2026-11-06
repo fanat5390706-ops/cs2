@@ -1,0 +1,9 @@
+<table class="tbl"><tbody>
+  {% for m in rows %}
+  <tr>
+    <td class="muted small">{{ m.scheduled_at|date:"d.m, H:i" }}</td>
+    <td><a href="{% url 'web:match_detail' m.match_id %}">{{ m.team1 }} <span class="muted">vs</span> {{ m.team2 }}</a>
+      <div class="muted small">{{ m.event }}</div></td>
+  </tr>
+  {% empty %}<tr><td class="empty">No upcoming matches.</td></tr>{% endfor %}
+</tbody></table>

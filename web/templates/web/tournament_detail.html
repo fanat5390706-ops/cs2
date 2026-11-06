@@ -1,0 +1,94 @@
+{% extends "web/base.html" %}
+{% load web_extras %}
+{% block title %}{{ tournament.name }}{% endblock %}
+
+{% block content %}
+<div class="hl-grid two">
+  <aside class="hl-left">
+    <div class="side-title">Matches</div>
+    <div class="side-box">
+      <a class="nav-side {% if tab == 'matches' %}active{% endif %}" href="?tab=matches">Matches</a>
+      <a class="nav-side {% if tab == 'results' %}active{% endif %}" href="?tab=results">Results</a>
+      <a class="nav-side {% if tab == 'stats' %}active{% endif %}" href="?tab=stats">Stats</a>
+    </div>
+    <div class="side-title">Sections</div>
+    <div class="side-box">
+      <a class="nav-side" href="#teams">Teams attending</a>
+      <a class="nav-side" href="#stages">Stages</a>
+      <a class="nav-side" href="{% url 'web:news_list' %}">News</a>
+      <a class="nav-side" href="{% url 'web:tournament_list' %}">Related events</a>
+    </div>
+  </aside>
+
+  <section class="hl-center">
+    <div class="ev-hero">
+      {% if tournament.image_url %}<img src="{{ tournament.image_url }}" alt="">{% endif %}
+      <h1>{{ tournament.name }}</h1>
+      {% if tournament.status == "ongoing" %}<span class="live hero-live">LIVE</span>{% endif %}
+    </div>
+    <div class="tabs ev-tabs">
+      {% for key, label in tabs %}<a class="{% if tab == key %}active{% endif %}" href="?tab={{ key }}">{{ label }}</a>{% endfor %}
+    </div>
+    <div class="ev-info">
+      <div><small>Date</small><b>{{ tournament.start_date|date:"d.m" }} – {{ tournament.end_date|date:"d.m.Y" }}</b></div>
+      <div><small>Prize pool</small><b>{% if tournament.prize_pool_usd %}${{ tournament.prize_pool_usd|intcomma_space }}{% else %}—{% endif %}</b></div>
+      <div><small>Teams</small><b>{{ teams_count }}</b></div>
+      <div><small>Location</small><b>{{ tournament.location|default:"—" }}</b></div>
+      <div><small>Tier</small><b>{{ tournament.tier|upper|default:"—" }}</b></div>
+    </div>
+
+    {% if tab == "overview" %}
+      <div class="sec-title" id="stages">Stages</div>
+      {% for g in groups %}
+      <div class="ev-group">
+        <div class="ev-head">{{ g.stage }}</div>
+        {% for m in g.matches %}
+        <a class="m-row" href="{% url 'web:match_detail' m.match_id %}">
+          <span class="m-time">{% if m.status == "live" %}<span class="live">LIVE</span>{% else %}{{ m.scheduled_at|date:"d.m H:i" }}{% endif %}<small>BO{{ m.best_of }}</small></span>
+          <span class="m-teams"><span>{% include "web/_logo.html" with logo=m.logo1 tag=m.tag1 %}{{ m.team1 }}</span><span>{% include "web/_logo.html" with logo=m.logo2 tag=m.tag2 %}{{ m.team2 }}</span></span>
+          {% if m.status != "scheduled" %}<span class="m-score"><b class="{% if m.maps_team1 >= m.maps_team2 %}pos{% else %}neg{% endif %}">{{ m.maps_team1 }}</b><b class="{% if m.maps_team2 >= m.maps_team1 %}pos{% else %}neg{% endif %}">{{ m.maps_team2 }}</b></span>{% else %}<span></span>{% endif %}
+        </a>
+        {% endfor %}
+      </div>
+      {% empty %}<div class="side-box"><div class="empty">Matches are not scheduled yet.</div></div>{% endfor %}
+
+      <div class="sec-title" id="teams">Teams attending</div>
+      <div class="teams-attending">
+        {% for e in teams %}<a href="{% url 'web:team_detail' e.team.pk %}">{% include "web/_logo.html" with logo=e.team.logo_url tag=e.team.tag %}<span>{{ e.team.name }}</span></a>{% empty %}<div class="muted">No teams registered.</div>{% endfor %}
+      </div>
+
+    {% elif tab == "matches" %}
+      <div class="sec-title">Upcoming and live</div>
+      {% include "web/_results_table.html" with matches=upcoming %}
+
+    {% elif tab == "results" %}
+      <div class="sec-title">Results</div>
+      {% include "web/_results_table.html" with matches=results %}
+
+    {% else %}
+      <div class="row g-3">
+        <div class="col-lg-7">
+          <div class="sec-title mt-2">Standings</div>
+          <div class="side-box"><table class="tbl stat-table">
+            <thead><tr><th class="num">#</th><th>Team</th><th class="num">Maps</th><th class="num">W</th><th class="num">L</th></tr></thead>
+            <tbody>
+              {% for r in standings %}<tr><td class="num muted">{{ forloop.counter }}</td><td>{{ r.team }}</td><td class="num">{{ r.matches_played }}</td><td class="num pos">{{ r.wins }}</td><td class="num neg">{{ r.losses }}</td></tr>
+              {% empty %}<tr><td colspan="5" class="empty">No finished series yet.</td></tr>{% endfor %}
+            </tbody>
+          </table></div>
+        </div>
+        <div class="col-lg-5">
+          <div class="sec-title mt-2">Top players</div>
+          <div class="side-box"><table class="tbl stat-table">
+            <thead><tr><th>Player</th><th class="num">K/D</th><th class="num">ADR</th></tr></thead>
+            <tbody>
+              {% for p in top_players %}<tr><td><a href="{% url 'web:player_detail' p.player_id %}">{{ p.nickname }}</a> <span class="muted small">{{ p.tag }}</span></td><td class="num {{ p.kd|kd_class }}">{{ p.kd|default_if_none:"—" }}</td><td class="num">{{ p.adr|default_if_none:"—" }}</td></tr>
+              {% empty %}<tr><td colspan="3" class="empty">Player statistics for this event are not available from the free data source.</td></tr>{% endfor %}
+            </tbody>
+          </table></div>
+        </div>
+      </div>
+    {% endif %}
+  </section>
+</div>
+{% endblock %}

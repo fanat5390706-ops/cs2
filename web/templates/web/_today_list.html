@@ -1,0 +1,11 @@
+{% load web_extras %}
+{% for m in matches %}
+<a class="td-row" href="{% url 'web:match_detail' m.match_id %}">
+  <span class="td-teams">
+    <span class="td-t">{% include "web/_logo.html" with logo=m.logo1 tag=m.tag1 %}{{ m.team1|truncatechars:16 }}</span>
+    <span class="td-t">{% include "web/_logo.html" with logo=m.logo2 tag=m.tag2 %}{{ m.team2|truncatechars:16 }}</span>
+  </span>
+  {% if m.status == "scheduled" %}<span class="td-time">{{ m.scheduled_at|date:"H:i" }}</span>
+  {% else %}<span class="td-score"><b class="{% if m.maps_team1 > m.maps_team2 %}pos{% else %}neg{% endif %}">{{ m.maps_team1 }}</b><b class="{% if m.maps_team2 > m.maps_team1 %}pos{% else %}neg{% endif %}">{{ m.maps_team2 }}</b></span>{% endif %}
+</a>
+{% empty %}<div class="empty">No matches today.</div>{% endfor %}

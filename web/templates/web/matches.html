@@ -1,0 +1,77 @@
+{% extends "web/base.html" %}
+{% load web_extras i18n %}
+{% block title %}{% if tab == "results" %}Results{% else %}Matches{% endif %}{% endblock %}
+
+{% block head %}{% if tab != "results" %}<meta http-equiv="refresh" content="60">{% endif %}{% endblock %}
+
+{% block content %}
+<div class="hl-grid two">
+  <aside class="hl-left">
+    <div class="cal">
+      <div class="cal-head"><a href="?tab={{ tab }}&date={{ calendar.prev|date:'Y-m-d' }}">&lsaquo;</a><span>{{ calendar.title }}</span><a href="?tab={{ tab }}&date={{ calendar.next|date:'Y-m-d' }}">&rsaquo;</a></div>
+      <table>
+        <tr><th>Mon</th><th>Tue</th><th>Wed</th><th>Thu</th><th>Fri</th><th>Sat</th><th>Sun</th></tr>
+        {% for week in calendar.weeks %}<tr>
+          {% for d, inside in week %}<td class="{% if not inside %}out{% endif %} {% if d == calendar.today %}today{% endif %} {% if d == day %}picked{% endif %}"><a href="?tab={{ tab }}&date={{ d|date:'Y-m-d' }}">{{ d.day }}</a></td>{% endfor %}
+        </tr>{% endfor %}
+      </table>
+    </div>
+
+    <div class="side-title">Match filters <a href="?tab={{ tab }}">Clear all</a></div>
+    <form class="side-box p-2" method="get">
+      <input type="hidden" name="tab" value="{{ tab }}">
+      <div class="small fw-bold mb-1">Team</div>
+      <input class="form-control form-control-sm mb-2" type="search" name="q" value="{{ q }}" placeholder="All teams">
+      <div class="small fw-bold mb-1">Tier</div>
+      <div class="tier-chips mb-2">
+        <a class="{% if not tier %}active{% endif %}" href="?tab={{ tab }}">All</a>
+        {% for t in "1234" %}<a class="{% if tier|stringformat:'s' == t %}active{% endif %}" href="?tab={{ tab }}&tier={{ t }}">Tier {{ t }}</a>{% endfor %}
+      </div>
+      <div class="small fw-bold mb-1">Tournament</div>
+      <select class="form-select form-select-sm" name="tournament" onchange="this.form.submit()">
+        <option value="">All events</option>
+        {% for t in tournaments %}<option value="{{ t.pk }}" {% if t.pk == tournament %}selected{% endif %}>{{ t.name|truncatechars:34 }}</option>{% endfor %}
+      </select>
+    </form>
+  </aside>
+
+  <section class="hl-center">
+    {% if tab == "results" %}
+    <div class="tabs"><a class="active" href="?tab=results">Results <span class="cnt">{{ counts.results }}</span></a></div>
+    {% else %}
+    <div class="tabs">
+      <a class="{% if tab == 'live' %}active{% endif %}" href="?tab=live">Live <span class="cnt">{{ counts.live }}</span></a>
+      <a class="{% if tab == 'upcoming' %}active{% endif %}" href="?tab=upcoming">Upcoming <span class="cnt">{{ counts.upcoming }}</span></a>
+    </div>
+    {% endif %}
+
+    {% if tab == "results" %}
+      <h1 class="sec-h">Results{% if day %} for {{ day|date:"d.m.Y" }}{% endif %}</h1>
+      {% regroup rows by day as days %}
+      {% for d in days %}
+      <div class="day-head">{% language "en" %}Results for {{ d.grouper|date:"F jS Y" }}{% endlanguage %}</div>
+      {% include "web/_results_table.html" with matches=d.list %}
+      {% empty %}<div class="panel"><div class="empty">No results.</div></div>{% endfor %}
+    {% else %}
+      <h1 class="sec-h">{% if tab == "live" %}Live{% else %}Upcoming{% endif %} Counter-Strike matches{% if day %} · {{ day|date:"d.m.Y" }}{% endif %}</h1>
+      {% regroup rows by day as days %}
+      {% for d in days %}
+      <div class="ev-group">
+        <div class="ev-head">{% language "en" %}{{ d.grouper|date:"l, F jS Y" }}{% endlanguage %}</div>
+        {% for m in d.list %}
+        <a class="m-row" href="{% url 'web:match_detail' m.match_id %}">
+          <span class="m-time">{% if m.status == "live" %}<span class="live">LIVE</span>{% else %}{{ m.scheduled_at|date:"H:i" }}{% endif %}<small>BO{{ m.best_of }}</small></span>
+          <span class="m-teams">
+            <span>{% include "web/_logo.html" with logo=m.logo1 tag=m.tag1 %}{{ m.team1 }}{% if m.pos1 %} <small class="text-muted">#{{ m.pos1 }}</small>{% endif %}</span>
+            <span>{% include "web/_logo.html" with logo=m.logo2 tag=m.tag2 %}{{ m.team2 }}{% if m.pos2 %} <small class="text-muted">#{{ m.pos2 }}</small>{% endif %}</span>
+          </span>
+          {% if m.status == "live" %}<span class="m-score"><b class="{% if m.maps_team1 >= m.maps_team2 %}pos{% else %}neg{% endif %}">{{ m.maps_team1 }}</b><b class="{% if m.maps_team2 >= m.maps_team1 %}pos{% else %}neg{% endif %}">{{ m.maps_team2 }}</b></span>{% endif %}
+          <span class="m-stage">T{{ m.tier }} · {{ m.event|truncatechars:30 }}</span>
+        </a>
+        {% endfor %}
+      </div>
+      {% empty %}<div class="panel"><div class="empty">No matches here.</div></div>{% endfor %}
+    {% endif %}
+  </section>
+</div>
+{% endblock %}

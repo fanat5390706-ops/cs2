@@ -1,0 +1,11 @@
+{% load web_extras %}
+<div class="lineup">
+  {% for m in current %}
+  <a href="{% url 'web:player_detail' m.player.pk %}">
+    {% if m.player.photo_url or m.player.avatar_url %}<img class="ph" src="{% firstof m.player.avatar_url m.player.photo_url %}" alt="">
+    {% else %}<div class="ph" style="{{ m.player.nickname|badge_style }}">{{ m.player.nickname|slice:":2"|upper }}</div>{% endif %}
+    <div class="nm">{% if m.player.country %}<img class="flag" src="{{ m.player.country|flag_url }}" alt="">{% endif %}{{ m.player.nickname }}</div>
+    <div class="rl">{% firstof m.player.role m.role|capfirst %}</div>
+  </a>
+  {% empty %}<div class="empty" style="grid-column:1/-1">No lineup data.</div>{% endfor %}
+</div>

@@ -1,0 +1,38 @@
+{% extends "web/base.html" %}
+{% block title %}News{% endblock %}
+
+{% block content %}
+<h1 class="h3 mb-2">News</h1>
+{% if articles %}
+<div class="row g-2">
+  <div class="col-lg-8">
+    {% with first=articles.0 %}
+    <a class="news-feature" href="{{ first.url }}" target="_blank" rel="noopener" {% if first.image_url %}style="background-image:url('{{ first.image_url }}')"{% endif %}>
+      <div class="shade"></div>
+      <div class="txt"><h2>{{ first.title }}</h2><div class="muted">{{ first.source }} · {{ first.published_at|date:"d.m.Y H:i" }}</div></div>
+    </a>
+    {% endwith %}
+  </div>
+  <div class="col-lg-4">
+    <div class="panel">
+      <div class="panel-head"><span>Latest</span></div>
+      <table class="tbl"><tbody>
+        {% for n in articles|slice:"1:9" %}
+        <tr><td><a href="{{ n.url }}" target="_blank" rel="noopener">{{ n.title }}</a><div class="muted small">{{ n.source }} · {{ n.published_at|date:"d.m H:i" }}</div></td></tr>
+        {% endfor %}
+      </tbody></table>
+    </div>
+  </div>
+</div>
+<div class="panel mt-2"><div class="news-cards" style="grid-template-columns:repeat(4,1fr)">
+  {% for n in articles|slice:"9:" %}
+  <a class="news-card" href="{{ n.url }}" target="_blank" rel="noopener">
+    <div class="pic" {% if n.image_url %}style="background-image:url('{{ n.image_url }}')"{% endif %}></div>
+    <div class="t">{{ n.title }}</div><div class="m">{{ n.source }} · {{ n.published_at|date:"d.m.Y" }}</div>
+  </a>
+  {% endfor %}
+</div></div>
+{% else %}
+<div class="empty">No news yet. Load them with <code>python manage.py sync_news</code>.</div>
+{% endif %}
+{% endblock %}

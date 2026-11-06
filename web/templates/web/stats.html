@@ -1,0 +1,99 @@
+{% extends "web/base.html" %}
+{% load web_extras %}
+{% block title %}Stats{% endblock %}
+
+{% block content %}
+<div class="hl-grid two">
+  <aside class="hl-left">
+    <div class="side-title">Navigation</div>
+    <div class="side-box">
+      {% for key, label in sections %}<a class="nav-side {% if section == key %}active{% endif %}" href="?section={{ key }}">{{ label|cut:" stats" }}</a>{% endfor %}
+    </div>
+  </aside>
+
+  <section class="hl-center">
+    {% if section == "players" %}
+    <h1 class="sec-h">Players</h1>
+    {% if tournament_mode %}
+    <p class="muted small">Statistics from tournament maps recorded on the site.</p>
+    <div class="side-box"><div class="table-responsive"><table class="tbl stat-table">
+      <thead><tr><th>Player</th><th>Team</th><th class="num">Maps</th><th class="num">Rounds</th><th class="num">K–D diff</th><th class="num">K/D</th><th class="num">ADR</th><th class="num">HS%</th></tr></thead>
+      <tbody>
+        {% for r in table_rows %}
+        <tr>
+          <td>{% if r.country %}<img class="flag" src="{{ r.country|flag_url }}" alt="">{% endif %}<a href="{% url 'web:player_detail' r.player_id %}">{{ r.nickname }}</a></td>
+          <td>{% if r.team_id %}<a href="{% url 'web:team_detail' r.team_id %}">{% include "web/_logo.html" with logo=r.logo tag=r.team_tag %}</a>{% else %}<span class="muted">—</span>{% endif %}</td>
+          <td class="num muted">{{ r.maps }}</td>
+          <td class="num muted">{{ r.rounds }}</td>
+          <td class="num {% if r.diff > 0 %}pos{% elif r.diff < 0 %}neg{% endif %}">{% if r.diff > 0 %}+{% endif %}{{ r.diff }}</td>
+          <td class="num fw-bold {{ r.kd|kd_class }}">{{ r.kd|default_if_none:"—" }}</td>
+          <td class="num">{{ r.adr|default_if_none:"—" }}</td>
+          <td class="num">{{ r.hs|default_if_none:"—" }}</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table></div></div>
+    {% else %}
+    <div class="panel mb-2"><div class="empty">No tournament statistics yet. Load them with <code>import_match_stats</code> (CSV). Meanwhile: FACEIT matchmaking values below.</div></div>
+    <p class="muted small">Top 100 by FACEIT ELO. K/D, HS% and win rate are FACEIT matchmaking averages, not tournament stats.</p>
+    <div class="side-box"><div class="table-responsive"><table class="tbl stat-table">
+      <thead><tr><th>Player</th><th>Team</th><th class="num">Matches</th><th class="num">K/D</th><th class="num">HS%</th><th class="num">Win %</th><th class="num">ELO</th></tr></thead>
+      <tbody>
+        {% for r in table_rows %}
+        <tr>
+          <td>{% if r.country %}<img class="flag" src="{{ r.country|flag_url }}" alt="">{% endif %}<a href="{% url 'web:player_detail' r.player_id %}">{{ r.nickname }}</a></td>
+          <td>{% if r.team_id %}<a href="{% url 'web:team_detail' r.team_id %}">{% include "web/_logo.html" with logo=r.logo tag=r.team_tag %}</a>{% else %}<span class="muted">—</span>{% endif %}</td>
+          <td class="num muted">{{ r.faceit_matches|default_if_none:"—" }}</td>
+          <td class="num {{ r.faceit_kd|kd_class }}">{{ r.faceit_kd|default_if_none:"—" }}</td>
+          <td class="num">{{ r.faceit_hs|default_if_none:"—" }}</td>
+          <td class="num">{{ r.faceit_win_rate|default_if_none:"—" }}</td>
+          <td class="num fw-bold">{{ r.faceit_elo }}</td>
+        </tr>
+        {% empty %}<tr><td colspan="7" class="empty">No data. Run link_steam_via_faceit --apply and sync_faceit.</td></tr>{% endfor %}
+      </tbody>
+    </table></div></div>
+    {% endif %}
+
+    {% elif section == "teams" %}
+    <h1 class="sec-h">Teams</h1>
+    <p class="muted small">Team order follows the loaded ranking{% if table_rows %} (as of {{ table_rows.0.date|date:"d.m.Y" }}){% endif %}. Maps, K–D diff, K/D and ADR come from tournament maps recorded on the site; "—" means no data yet.</p>
+    <div class="side-box"><div class="table-responsive"><table class="tbl stat-table">
+      <thead><tr><th class="num">#</th><th>Team</th><th class="num">Maps</th><th class="num">K–D diff</th><th class="num">K/D</th><th class="num">ADR</th><th class="num">W–L</th><th class="num">Points</th></tr></thead>
+      <tbody>
+        {% for r in table_rows %}
+        <tr>
+          <td class="num muted">{{ r.position }}</td>
+          <td>{% include "web/_logo.html" with logo=r.logo tag=r.tag %} {% if r.team_id %}<a href="{% url 'web:team_detail' r.team_id %}">{{ r.team }}</a>{% else %}{{ r.team }}{% endif %}</td>
+          <td class="num muted">{{ r.maps|default_if_none:"—" }}</td>
+          <td class="num {% if r.diff and r.diff > 0 %}pos{% elif r.diff and r.diff < 0 %}neg{% endif %}">{% if r.diff is None %}—{% else %}{% if r.diff > 0 %}+{% endif %}{{ r.diff }}{% endif %}</td>
+          <td class="num {{ r.kd|kd_class }}">{{ r.kd|default_if_none:"—" }}</td>
+          <td class="num">{{ r.adr|default_if_none:"—" }}</td>
+          <td class="num muted">{% if r.wins is not None %}{{ r.wins }}–{{ r.losses }}{% else %}—{% endif %}</td>
+          <td class="num fw-bold">{{ r.points }}</td>
+        </tr>
+        {% empty %}<tr><td colspan="8" class="empty">Ranking is not loaded. Run: python manage.py sync_vrs</td></tr>{% endfor %}
+      </tbody>
+    </table></div></div>
+
+    {% else %}
+    <h1 class="sec-h">Maps</h1>
+    <div class="map-tiles mb-3">
+      {% for t in map_tiles %}<div class="map-tile map-{{ t.theme }}"><span>{{ t.name }}</span></div>{% empty %}<div class="muted">Map pool is empty (add maps in the admin).</div>{% endfor %}
+    </div>
+    <h2 class="sec-h">Distribution of maps played</h2>
+    <div class="side-box p-2 mb-3">
+      {% for t in map_tiles %}<div class="dist-row"><span class="dist-name">{{ t.name }}</span><span class="dist-bar"><i class="map-{{ t.theme }}" style="width: {{ t.bar }}%"></i></span><b>{{ t.played }}</b></div>{% endfor %}
+      <div class="muted small mt-2">Tournament maps recorded on the site (import_match_stats). Empty until map results are loaded.</div>
+    </div>
+    <div class="side-box"><table class="tbl stat-table">
+      <thead><tr><th>Map</th><th class="num">Players</th><th class="num">Matches</th><th class="num">Win %</th><th class="num">K/D</th></tr></thead>
+      <tbody>
+        {% for r in map_rows %}<tr><td class="fw-bold">{{ r.map }}</td><td class="num">{{ r.players }}</td><td class="num">{{ r.matches }}</td><td class="num">{{ r.win_rate|default_if_none:"—" }}</td><td class="num">{{ r.kd|default_if_none:"—" }}</td></tr>
+        {% empty %}<tr><td colspan="5" class="empty">No map data yet. Run sync_faceit.</td></tr>{% endfor %}
+      </tbody>
+    </table></div>
+    <p class="muted small mt-1">Table below: FACEIT statistics of tracked players, not tournament data.</p>
+    {% endif %}
+  </section>
+</div>
+{% endblock %}

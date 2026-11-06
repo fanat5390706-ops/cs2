@@ -1,0 +1,44 @@
+{% extends "web/base.html" %}
+{% load web_extras %}
+{% block title %}Поиск{% endblock %}
+
+{% block content %}
+<h1 class="h3 mb-3">Поиск{% if q %}: «{{ q }}»{% endif %}</h1>
+
+{% if not q %}
+<div class="panel"><div class="empty">Введите никнейм игрока, название команды или турнира в строке поиска.</div></div>
+{% else %}
+<div class="row g-4">
+  <div class="col-md-4">
+    <div class="panel">
+      <div class="panel-head"><span>Игроки</span></div>
+      <table class="tbl"><tbody>
+        {% for p in players %}
+        <tr><td>{% if p.country %}<img class="flag" src="{{ p.country|flag_url }}" alt="">{% endif %}<a href="{% url 'web:player_detail' p.pk %}">{{ p.nickname }}</a></td></tr>
+        {% empty %}<tr><td class="empty">Не найдено.</td></tr>{% endfor %}
+      </tbody></table>
+    </div>
+  </div>
+  <div class="col-md-4">
+    <div class="panel">
+      <div class="panel-head"><span>Команды</span></div>
+      <table class="tbl"><tbody>
+        {% for t in teams %}
+        <tr><td><a href="{% url 'web:team_detail' t.pk %}">{{ t.name }}</a> <span class="muted small">{{ t.tag }}</span></td></tr>
+        {% empty %}<tr><td class="empty">Не найдено.</td></tr>{% endfor %}
+      </tbody></table>
+    </div>
+  </div>
+  <div class="col-md-4">
+    <div class="panel">
+      <div class="panel-head"><span>Турниры</span></div>
+      <table class="tbl"><tbody>
+        {% for t in tournaments %}
+        <tr><td><a href="{% url 'web:tournament_detail' t.pk %}">{{ t.name }}</a></td></tr>
+        {% empty %}<tr><td class="empty">Не найдено.</td></tr>{% endfor %}
+      </tbody></table>
+    </div>
+  </div>
+</div>
+{% endif %}
+{% endblock %}

@@ -1,0 +1,92 @@
+{% extends "web/base.html" %}
+{% load web_extras %}
+{% block title %}{{ team.name }}{% endblock %}
+
+{% block content %}
+<div class="team-head">
+  {% include "web/_logo.html" with logo=team.logo_url tag=team.tag size="xl" %}
+  <div class="flex-grow-1">
+    <h1>{{ team.name }}</h1>
+    <div class="muted">{% if rank %}#{{ rank.position }} in world ranking{% else %}Not ranked yet{% endif %}</div>
+  </div>
+  {% if user.is_authenticated %}
+  <form method="post" action="{% url 'web:team_favorite' team.pk %}">{% csrf_token %}
+    <button class="btn btn-sm {% if is_favorite %}btn-accent{% else %}btn-outline-light{% endif %}" type="submit">&#9733; {% if is_favorite %}In favorites{% else %}Add to favorites{% endif %}</button>
+  </form>
+  {% else %}
+  <a class="btn btn-sm btn-outline-light" href="{% url 'login' %}?next={{ request.path }}">&#9733; Add to favorites</a>
+  {% endif %}
+</div>
+
+<div class="tabs">
+  {% for key, label in tabs %}<a class="{% if tab == key %}active{% endif %}" href="?tab={{ key }}">{{ label }}</a>{% endfor %}
+</div>
+
+{% if tab == "overview" %}
+<div class="row g-2">
+  <div class="col-lg-8">
+    <div class="panel">
+      <div class="panel-head"><span>Current lineup</span></div>
+      {% include "web/_lineup.html" %}
+    </div>
+    <div class="panel">
+      <div class="panel-head"><span>Team information</span></div>
+      {% include "web/_team_info.html" %}
+    </div>
+  </div>
+  <div class="col-lg-4">
+    <div class="panel">
+      <div class="panel-head"><span>Recent results</span><a href="?tab=results">See all</a></div>
+      {% include "web/_team_results.html" with rows=recent %}
+    </div>
+    <div class="panel">
+      <div class="panel-head"><span>Upcoming matches</span><a href="?tab=matches">See all</a></div>
+      {% include "web/_team_upcoming.html" with rows=upcoming %}
+    </div>
+  </div>
+</div>
+
+{% elif tab == "players" %}
+<div class="panel"><div class="panel-head"><span>Current lineup</span></div>{% include "web/_lineup.html" %}</div>
+<div class="panel">
+  <div class="panel-head"><span>Former players</span></div>
+  <table class="tbl"><tbody>
+    {% for m in history %}<tr><td><a href="{% url 'web:player_detail' m.player.pk %}">{{ m.player.nickname }}</a></td>
+      <td class="num muted">{{ m.joined_on|date:"d.m.Y" }} — {{ m.left_on|date:"d.m.Y" }}</td></tr>
+    {% empty %}<tr><td class="empty">No transfers yet.</td></tr>{% endfor %}
+  </tbody></table>
+</div>
+
+{% elif tab == "matches" %}
+<div class="panel"><div class="panel-head"><span>Upcoming matches</span></div>
+  {% include "web/_team_upcoming.html" with rows=all_upcoming %}</div>
+
+{% elif tab == "results" %}
+<div class="panel"><div class="panel-head"><span>Results</span></div>
+  {% include "web/_results_table.html" with matches=results %}</div>
+
+{% elif tab == "stats" %}
+<div class="stat-grid" style="grid-template-columns: repeat(5, 1fr)">
+  <div class="stat-card accent"><div class="value">{{ record.wins }}–{{ record.losses }}</div><div class="label">Wins–Losses</div></div>
+  <div class="stat-card"><div class="value">{% if record.win_rate is not None %}{{ record.win_rate }}%{% else %}—{% endif %}</div><div class="label">Win rate</div></div>
+  <div class="stat-card"><div class="value">{{ record.maps_won }}–{{ record.maps_lost }}</div><div class="label">Maps won–lost</div></div>
+  <div class="stat-card"><div class="value">{{ record.streak|default:"—" }}</div><div class="label">Current streak</div></div>
+  <div class="stat-card"><div class="value">{% for f in record.form %}<span class="form form-{{ f }}">{{ f }}</span>{% empty %}—{% endfor %}</div><div class="label">Form (last 5)</div></div>
+</div>
+<div class="panel">
+  <div class="panel-head"><span>Events</span></div>
+  <table class="tbl"><tbody>
+    {% for e in entries %}<tr><td><a href="{% url 'web:tournament_detail' e.tournament.pk %}">{{ e.tournament.name }}</a></td>
+      <td class="num muted">{{ e.tournament.start_date|date:"d.m.Y" }}</td></tr>
+    {% empty %}<tr><td class="empty">No data.</td></tr>{% endfor %}
+  </tbody></table>
+</div>
+<p class="muted small">Statistics are computed from series results stored in the database.</p>
+
+{% else %}
+<div class="panel"><div class="panel-head"><span>News</span></div>
+  {% for n in news %}<a class="info-list d-block p-2" href="{{ n.url }}" target="_blank" rel="noopener">{{ n.title }}<div class="muted small">{{ n.source }} · {{ n.published_at|timesince }} ago</div></a>
+  {% empty %}<div class="empty">No news mention this team yet.</div>{% endfor %}
+</div>
+{% endif %}
+{% endblock %}

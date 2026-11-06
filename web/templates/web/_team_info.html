@@ -1,0 +1,13 @@
+{% load web_extras %}
+<div class="info-list">
+  <div><span>Location</span><span>{% if team.country %}<img class="flag" src="{{ team.country|flag_url }}" alt="">{{ team.country }}{% else %}—{% endif %}</span></div>
+  <div><span>Founded</span><span>{{ team.founded_year|default:"—" }}</span></div>
+  <div><span>World ranking</span><span>{% if rank %}#{{ rank.position }} ({{ rank.points }} pts){% else %}—{% endif %}</span></div>
+  <div><span>Record</span><span>{{ record.wins }}–{{ record.losses }}{% if record.win_rate is not None %} ({{ record.win_rate }}%){% endif %}</span></div>
+  <div><span>Social media</span><span>
+    {% if team.twitter_url %}<a href="{{ team.twitter_url }}" target="_blank" rel="noopener">X</a> {% endif %}
+    {% if team.youtube_url %}<a href="{{ team.youtube_url }}" target="_blank" rel="noopener">YouTube</a> {% endif %}
+    {% if team.twitch_url %}<a href="{{ team.twitch_url }}" target="_blank" rel="noopener">Twitch</a>{% endif %}
+    {% if not team.twitter_url and not team.youtube_url and not team.twitch_url %}—{% endif %}</span></div>
+  <div><span>Website</span><span>{% if team.website %}<a href="{{ team.website }}" target="_blank" rel="noopener">{{ team.website|cut:"https://"|cut:"http://"|truncatechars:26 }}</a>{% else %}—{% endif %}</span></div>
+</div>
