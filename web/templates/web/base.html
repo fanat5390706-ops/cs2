@@ -81,5 +81,17 @@
 </footer>
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+// Десктоп: клик по пункту меню с выпадающим списком открывает его страницу (как у HLTV), список открывается по наведению.
+(function () {
+  var wide = window.matchMedia("(min-width: 992px)");
+  document.querySelectorAll(".hover-menu > .dropdown-toggle").forEach(function (a) {
+    a.addEventListener("click", function (e) {
+      var href = a.getAttribute("href");
+      if (wide.matches && href && href !== "#") { e.stopImmediatePropagation(); window.location.href = href; }
+    }, true);
+  });
+})();
+</script>
 </body>
 </html>
